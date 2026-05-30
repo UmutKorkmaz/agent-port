@@ -1,0 +1,18 @@
+{
+  "name": "Local Bootstrap Key",
+  "workspaceId": "00000000-0000-4000-8000-000000000001",
+  "projectId": "00000000-0000-4000-8000-000000000101",
+  "expiresAt": null,
+  "scopes": [
+    "workspace:read",
+    "workspace:write",
+    "project:read",
+    "project:write",
+    "agent:read",
+    "agent:write",
+    "model-route:read",
+    "model-route:write",
+    "trace:read",
+    "eval:run"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "workspace": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Local Demo Workspace",
+    "slug": "local-demo",
+    "ownerEmail": "owner@agentport.local"
+  },
+  "project": {
+    "id": "00000000-0000-4000-8000-000000000101",
+    "workspaceId": "00000000-0000-4000-8000-000000000001",
+    "name": "Phase 0 Demo Project",
+    "slug": "phase0-demo",
+    "environment": "local"
+  }
+}
