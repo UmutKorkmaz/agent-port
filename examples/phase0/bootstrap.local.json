@@ -1,0 +1,29 @@
+{
+  "environment": "local",
+  "workspace": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Local Demo Workspace",
+    "slug": "local-demo"
+  },
+  "defaultProject": {
+    "id": "00000000-0000-4000-8000-000000000101",
+    "name": "Phase 0 Demo Project",
+    "slug": "phase0-demo"
+  },
+  "services": {
+    "platformApiUrl": "http://localhost:5001",
+    "aiServicesUrl": "http://localhost:5002",
+    "webUrl": "http://localhost:3000"
+  },
+  "storage": {
+    "provider": "minio",
+    "endpoint": "http://localhost:9000",
+    "bucket": "agentport",
+    "region": "us-east-1",
+    "forcePathStyle": true
+  },
+  "queues": {
+    "brokerUrl": "amqp://agentport:agentport@localhost:5672/",
+    "defaultQueue": "agentport.jobs"
+  }
+}

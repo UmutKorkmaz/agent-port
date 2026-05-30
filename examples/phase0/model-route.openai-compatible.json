@@ -1,0 +1,22 @@
+{
+  "id": "00000000-0000-4000-8000-000000000201",
+  "name": "local-openai-compatible-chat",
+  "enabled": true,
+  "priority": 100,
+  "match": {
+    "capability": "chat",
+    "requestedModel": "llama3.1:8b"
+  },
+  "provider": {
+    "type": "openai-compatible",
+    "baseUrl": "http://localhost:11434/v1",
+    "apiKeyEnv": "OLLAMA_API_KEY",
+    "model": "llama3.1:8b"
+  },
+  "limits": {
+    "maxInputTokens": 8192,
+    "maxOutputTokens": 2048,
+    "timeoutSeconds": 60
+  },
+  "fallbacks": []
+}

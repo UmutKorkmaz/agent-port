@@ -1,0 +1,41 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# .NET
+bin/
+obj/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local backups and runtime data
+infra/backups/
+*.dump
+*.backup
+*.bak
+*.log
+
+# Local agent/editor state
+AGENTS.md
+.agents/
+.claude-octopus/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,15 @@
+{
+  "id": "00000000-0000-4000-8000-000000000301",
+  "workspaceId": "00000000-0000-4000-8000-000000000001",
+  "projectId": "00000000-0000-4000-8000-000000000101",
+  "name": "Empty Local Agent",
+  "slug": "empty-local-agent",
+  "version": "0.0.0",
+  "description": "",
+  "instructions": "",
+  "modelRouteId": null,
+  "tools": [],
+  "knowledgeBaseIds": [],
+  "environment": {},
+  "metadata": {}
+}
