@@ -1,0 +1,21 @@
+# CI-only override for the web Playwright e2e job.
+#
+# Layered on top of docker-compose.prod.yml (which publishes no app ports and
+# pins ai-services to the e5 embedding backend). This override:
+#   * forces the deterministic, model-free hash embedding backend so no
+#     multilingual-e5-base download is needed in CI;
+#   * publishes the web container's internal port 3000 to host 3002 so
+#     Playwright can reach it at http://127.0.0.1:3002 (the config default).
+#
+# It is NOT used in production. Usage (see .github/workflows/ci.yml):
+#   docker compose -f docker-compose.prod.yml -f docker-compose.ci-e2e.yml \
+#     --env-file .env.prod up -d --build
+
+services:
+  ai-services:
+    environment:
+      EMBEDDING_BACKEND: "hash"
+
+  web:
+    ports:
+      - "3002:3000"
