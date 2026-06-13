@@ -15,292 +15,40 @@ import {
   getProviderCatalogDetail,
   ProviderCatalogDetail,
 } from "./model-catalog-data";
-
-type ServiceState = "checking" | "ok" | "error";
-
-type BootstrapState = {
-  workspaceId: string;
-  projectId: string;
-  modelRouteId: string;
-  modelProviderId?: string;
-  agentDefinitionId: string;
-  datasetId: string;
-  knowledgeBaseId: string;
-  walletAccountId: string;
-  apiKey?: string | null;
-  apiKeyMessage?: string;
-};
-
-type ModelProvider = {
-  id?: string;
-  workspaceId?: string | null;
-  name?: string;
-  label?: string;
-  kind?: string;
-  baseUrl?: string | null;
-  isEnabled?: boolean;
-  metadataJson?: string;
-  capabilities?: string[];
-  useCase?: string;
-  advantage?: string;
-  disadvantage?: string;
-  cost?: string;
-  privacy?: string;
-  lockIn?: string;
-  keyMode?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-type ModelRoute = {
-  id: string;
-  workspaceId?: string;
-  projectId?: string | null;
-  providerId?: string;
-  providerName?: string;
-  name: string;
-  slug?: string;
-  modelName: string;
-  routeType?: string;
-  priority?: number;
-  isDefault?: boolean;
-  isEnabled?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-type ProviderPriceSnapshot = {
-  id?: string;
-  providerId?: string;
-  providerName?: string;
-  modelName?: string;
-  currency?: string;
-  inputTokenPricePerMillion?: number | string;
-  outputTokenPricePerMillion?: number | string;
-  requestPrice?: number | string;
-  capturedAt?: string;
-  createdAt?: string;
-};
-
-type LocalModelStatus = {
-  status?: string;
-  provider?: string;
-  model?: string;
-  modelName?: string;
-  routeHealth?: string;
-  enabled?: boolean;
-  baseUrl?: string;
-  errorType?: string | null;
-  checkedAt?: string;
-  models?: string[];
-  metadata?: Record<string, unknown>;
-};
-
-type CatalogApiStatuses = {
-  status: ControlStatus;
-  catalog: ControlStatus;
-  providers: ControlStatus;
-  routes: ControlStatus;
-  prices: ControlStatus;
-  localModel: ControlStatus;
-};
-
-type ProviderCardModel = ProviderCatalogDetail & {
-  id?: string;
-  baseUrl?: string | null;
-  isEnabled?: boolean;
-  source: "platform" | "fallback" | "route";
-};
-
-type Dataset = {
-  id: string;
-  workspaceId: string;
-  projectId: string;
-  knowledgeBaseId?: string | null;
-  name: string;
-  slug: string;
-  kind: string;
-  documentCount: number;
-  chunkCount: number;
-};
-
-type IngestionJob = {
-  id: string;
-  datasetId: string;
-  documentAssetId: string;
-  status: string;
-  chunkCount: number;
-  errorMessage?: string | null;
-  createdAt: string;
-};
-
-type Citation = {
-  citation_id?: string;
-  citationId?: string;
-  file_name?: string;
-  fileName?: string;
-  score?: number;
-};
-
-type RetrievedChunk = {
-  id: string;
-  citation_id?: string;
-  citationId?: string;
-  text: string;
-  score: number;
-  metadata?: Record<string, unknown>;
-};
-
-type ChatResponse = {
-  answer: string;
-  citations: Citation[];
-  retrieved_chunks?: RetrievedChunk[];
-  retrievedChunks?: RetrievedChunk[];
-  retrieval?: {
-    top_k?: number;
-    topK?: number;
-    score_threshold?: number;
-    scoreThreshold?: number;
-    max_score?: number | null;
-    maxScore?: number | null;
-    no_answer?: boolean;
-    noAnswer?: boolean;
-  };
-  provider_response?: Record<string, unknown>;
-  providerResponse?: Record<string, unknown>;
-  run_id?: string;
-  runId?: string;
-  trace_id_record?: string;
-  traceIdRecord?: string;
-  fallback_mode?: string;
-  fallbackMode?: string;
-  estimated_cost?: number;
-  estimatedCost?: number;
-};
-
-type Run = {
-  id: string;
-  agentDefinitionId: string;
-  traceRecordId?: string | null;
-  question: string;
-  answer: string;
-  fallbackMode: string;
-  citationsJson: string;
-  retrievedChunksJson: string;
-  latencyMs: number;
-  estimatedCost: number;
-  createdAt: string;
-};
-
-type TrainingJob = {
-  id: string;
-  workspaceId: string;
-  projectId: string;
-  datasetId?: string | null;
-  name: string;
-  slug: string;
-  kind: string;
-  status: string;
-  configJson: string;
-  hyperparametersJson: string;
-  artifactsJson: string;
-  metricsJson: string;
-  estimatedCost: number;
-  actualCost: number;
-  startedAt?: string | null;
-  completedAt?: string | null;
-  failureReason?: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type ModelVersion = {
-  id: string;
-  workspaceId: string;
-  projectId: string;
-  trainingJobId?: string | null;
-  name: string;
-  slug: string;
-  kind: string;
-  status: string;
-  artifactUri?: string | null;
-  configJson: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type EvalRun = {
-  id: string;
-  workspaceId: string;
-  projectId: string;
-  evalSuiteId: string;
-  modelVersionId?: string | null;
-  status: string;
-  score?: number | null;
-  threshold?: number | null;
-  passed: boolean;
-  createdAt: string;
-};
-
-type HumanReviewRecord = {
-  id: string;
-  workspaceId: string;
-  queue: string;
-  status: string;
-  label?: string | null;
-  severity?: string | null;
-  reason?: string | null;
-  reviewerName?: string | null;
-  reviewedAt?: string | null;
-  canReuseForTraining: boolean;
-  createdAt: string;
-};
-
-type DocumentAsset = {
-  id?: string;
-  documentAssetId?: string;
-  datasetId?: string;
-  fileName?: string;
-  name?: string;
-  status?: string;
-  contentHash?: string | null;
-  documentVersion?: number;
-  isActive?: boolean;
-  chunkCount?: number;
-  sizeBytes?: number;
-  latestIngestionJobId?: string;
-  archivedAt?: string | null;
-  deletedAt?: string | null;
-  createdAt?: string;
-  updatedAt?: string;
-  source?: "api" | "ingestion-job";
-};
-
-type TraceRecord = {
-  id: string;
-  workspaceId: string;
-  projectId: string;
-  agentDefinitionId?: string | null;
-  modelRouteId?: string | null;
-  correlationId?: string | null;
-  traceType: string;
-  status: string;
-  inputTokens: number;
-  outputTokens: number;
-  costAmount: number;
-  startedAt: string;
-  endedAt?: string | null;
-  metadataJson: string;
-  createdAt: string;
-};
-
-type ControlStatus = {
-  label: string;
-  detail: string;
-  tone: ReadinessTone;
-};
-
-type DevAction = "reset" | "seed";
+import {
+  extractCollection,
+  extractNestedObject,
+  isPendingEndpoint,
+  requestFirstAvailableCollection,
+  requestFirstAvailableJson,
+  requestOptionalCollection,
+  requestOptionalJson,
+} from "@/lib/api";
+import { useWorkspaceStateValue } from "@/lib/workspace-context";
+import type {
+  BootstrapState,
+  CatalogApiStatuses,
+  ChatResponse,
+  Citation,
+  ControlStatus,
+  Dataset,
+  DevAction,
+  DocumentAsset,
+  EvalRun,
+  HumanReviewRecord,
+  IngestionJob,
+  LocalModelStatus,
+  ModelProvider,
+  ModelRoute,
+  ModelVersion,
+  ProviderCardModel,
+  ProviderPriceSnapshot,
+  RetrievedChunk,
+  Run,
+  ServiceState,
+  TraceRecord,
+  TrainingJob,
+} from "@/lib/types";
 
 export function OperatorDashboardClient({
   section,
@@ -309,24 +57,43 @@ export function OperatorDashboardClient({
   section: SectionDetail;
   sectionSlug: SectionSlug;
 }) {
+  const {
+    bootstrap,
+    setBootstrap,
+    datasets,
+    setDatasets,
+    jobs,
+    setJobs,
+    runs,
+    setRuns,
+    trainingJobs,
+    setTrainingJobs,
+    modelVersions,
+    setModelVersions,
+    evalRuns,
+    setEvalRuns,
+    humanReviews,
+    setHumanReviews,
+    documents,
+    setDocuments,
+    modelProviders,
+    setModelProviders,
+    modelRoutes,
+    setModelRoutes,
+    priceSnapshots,
+    setPriceSnapshots,
+    localModelStatus,
+    setLocalModelStatus,
+  } = useWorkspaceStateValue();
   const [platformState, setPlatformState] = useState<ServiceState>("checking");
   const [aiState, setAiState] = useState<ServiceState>("checking");
-  const [bootstrap, setBootstrap] = useState<BootstrapState | null>(null);
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [jobs, setJobs] = useState<IngestionJob[]>([]);
-  const [runs, setRuns] = useState<Run[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [question, setQuestion] = useState("What does this document say about refunds?");
   const [chatResult, setChatResult] = useState<ChatResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [trainingJobs, setTrainingJobs] = useState<TrainingJob[]>([]);
-  const [modelVersions, setModelVersions] = useState<ModelVersion[]>([]);
-  const [evalRuns, setEvalRuns] = useState<EvalRun[]>([]);
-  const [humanReviews, setHumanReviews] = useState<HumanReviewRecord[]>([]);
   const [trainingTargetColumn, setTrainingTargetColumn] = useState("label");
   const [trainingTask, setTrainingTask] = useState<"classification" | "regression">("classification");
-  const [documents, setDocuments] = useState<DocumentAsset[]>([]);
   const [documentStatus, setDocumentStatus] = useState<ControlStatus>({
     label: "Document endpoint",
     detail: "Not checked yet.",
@@ -359,10 +126,6 @@ export function OperatorDashboardClient({
     detail: "Select a run to load trace metadata.",
     tone: "placeholder",
   });
-  const [modelProviders, setModelProviders] = useState<ModelProvider[]>([]);
-  const [modelRoutes, setModelRoutes] = useState<ModelRoute[]>([]);
-  const [priceSnapshots, setPriceSnapshots] = useState<ProviderPriceSnapshot[]>([]);
-  const [localModelStatus, setLocalModelStatus] = useState<LocalModelStatus | null>(null);
   const [selectedModelRouteId, setSelectedModelRouteId] = useState("");
   const [catalogStatuses, setCatalogStatuses] = useState<CatalogApiStatuses>({
     status: {
@@ -2370,123 +2133,6 @@ function SectionView({ section }: { section: SectionDetail }) {
   );
 }
 
-async function requestOptionalJson<T>(
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<{ ok: boolean; status: number; data?: T; text: string }> {
-  try {
-    const response = await fetch(input, init);
-    const text = await response.text();
-    let data: T | undefined;
-    if (text) {
-      try {
-        data = JSON.parse(text) as T;
-      } catch {
-        data = undefined;
-      }
-    }
-    return { ok: response.ok, status: response.status, data, text };
-  } catch (err) {
-    return {
-      ok: false,
-      status: 0,
-      text: err instanceof Error ? err.message : "Request failed.",
-    };
-  }
-}
-
-async function requestFirstAvailableJson<T>(
-  inputs: string[],
-): Promise<{ ok: boolean; status: number; data?: T; text: string; source?: string }> {
-  let last: { ok: boolean; status: number; data?: T; text: string; source?: string } = {
-    ok: false,
-    status: 0,
-    text: "No endpoint was checked.",
-  };
-
-  for (const input of inputs) {
-    const result = await requestOptionalJson<T>(input, { cache: "no-store" });
-    last = { ...result, source: input };
-    if (result.ok || !isPendingEndpoint(result.status)) {
-      return last;
-    }
-  }
-
-  return last;
-}
-
-async function requestOptionalCollection<T>(
-  input: string,
-  keys: string[],
-): Promise<{ ok: boolean; status: number; data: T[]; text: string; source?: string }> {
-  const result = await requestOptionalJson<unknown>(input, { cache: "no-store" });
-  return {
-    ok: result.ok,
-    status: result.status,
-    data: result.ok ? extractCollection<T>(result.data, keys) : [],
-    text: result.text,
-    source: input,
-  };
-}
-
-async function requestFirstAvailableCollection<T>(
-  inputs: string[],
-  keys: string[],
-): Promise<{ ok: boolean; status: number; data: T[]; text: string; source?: string }> {
-  let last: { ok: boolean; status: number; data: T[]; text: string; source?: string } = {
-    ok: false,
-    status: 0,
-    data: [],
-    text: "No endpoint was checked.",
-  };
-
-  for (const input of inputs) {
-    const result = await requestOptionalCollection<T>(input, keys);
-    last = result;
-    if (result.ok || !isPendingEndpoint(result.status)) {
-      return result;
-    }
-  }
-
-  return last;
-}
-
-function extractCollection<T>(data: unknown, keys: string[]): T[] {
-  if (Array.isArray(data)) {
-    return data as T[];
-  }
-
-  if (!data || typeof data !== "object") {
-    return [];
-  }
-
-  const record = data as Record<string, unknown>;
-  for (const key of keys) {
-    const value = record[key];
-    if (Array.isArray(value)) {
-      return value as T[];
-    }
-  }
-
-  return [];
-}
-
-function extractNestedObject<T>(data: unknown, keys: string[]): T | null {
-  if (!data || typeof data !== "object") {
-    return null;
-  }
-
-  const record = data as Record<string, unknown>;
-  for (const key of keys) {
-    const value = record[key];
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      return value as T;
-    }
-  }
-
-  return null;
-}
-
 function resultToControlStatus(
   result: { ok: boolean; status: number; text: string },
   loadedLabel: string,
@@ -2507,10 +2153,6 @@ function resultToControlStatus(
     detail: pending ? "Endpoint is missing or not enabled yet; UI fallback is active." : shortenText(result.text || "Request failed.", 240),
     tone: pending ? "placeholder" : "pending",
   };
-}
-
-function isPendingEndpoint(status: number) {
-  return status === 0 || status === 404 || status === 405 || status === 501;
 }
 
 function buildProviderCards(
