@@ -3,6 +3,7 @@ using AgentPort.PlatformApi.Data;
 using AgentPort.PlatformApi.Infrastructure;
 using AgentPort.PlatformApi.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -571,8 +572,10 @@ public static class Phase0Endpoints
         AgentPortDbContext db,
         IHttpClientFactory httpClientFactory,
         IConfiguration configuration,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
+        var logger = loggerFactory.CreateLogger(typeof(Phase0Endpoints));
         if (file.Length == 0)
         {
             return ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["File is required."] });
@@ -621,6 +624,14 @@ public static class Phase0Endpoints
         using var response = await client.SendAsync(ingestRequest, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogWarning(
+                "ai-services ingest proxy returned non-success status {StatusCode} for dataset {DatasetId}.",
+                (int)response.StatusCode,
+                dataset.Id);
+        }
+
         return Results.Content(
             responseBody,
             "application/json",
@@ -664,8 +675,10 @@ public static class Phase0Endpoints
         AgentPortDbContext db,
         IHttpClientFactory httpClientFactory,
         IConfiguration configuration,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
+        var logger = loggerFactory.CreateLogger(typeof(Phase0Endpoints));
         if (string.IsNullOrWhiteSpace(request.Question))
         {
             return ValidationProblem(new Dictionary<string, string[]> { ["question"] = ["Question is required."] });
@@ -762,7 +775,15 @@ public static class Phase0Endpoints
                 apiKeyValidation.ApiKey!,
                 Math.Clamp(request.TopK ?? 4, 1, 12),
                 request.ScoreThreshold,
+                logger,
                 cancellationToken);
+        }
+        else
+        {
+            logger.LogWarning(
+                "ai-services chat proxy returned non-success status {StatusCode} for agent {AgentId}.",
+                (int)response.StatusCode,
+                agent.Id);
         }
 
         return Results.Content(responseBody, "application/json", statusCode: (int)response.StatusCode);
@@ -972,62 +993,78 @@ public static class Phase0Endpoints
         ApiKey apiKey,
         int topK,
         decimal? scoreThreshold,
+        ILogger logger,
         CancellationToken cancellationToken)
     {
-        using var document = JsonDocument.Parse(responseBody);
-        var root = document.RootElement;
-        var runId = TryGetGuid(root, "run_id", "runId");
-        var traceId = TryGetGuid(root, "trace_id_record", "traceIdRecord");
-        var retrieval = TryGetProperty(root, "retrieval");
-        var noAnswer = retrieval.HasValue
-            && TryGetBoolean(retrieval.Value, "no_answer", "noAnswer") == true;
-        var bestScore = retrieval.HasValue ? TryGetDecimal(retrieval.Value, "max_score", "maxScore") : null;
-        var responseScoreThreshold = retrieval.HasValue
-            ? TryGetDecimal(retrieval.Value, "score_threshold", "scoreThreshold")
-            : scoreThreshold;
-        var qualityStatus = noAnswer ? "no_answer" : "passed";
-        var noAnswerReason = noAnswer ? "retrieval_score_below_threshold" : null;
-        var authMetadata = JsonSerializer.Serialize(new
+        JsonDocument document;
+        try
         {
-            api_key_prefix = apiKey.Prefix,
-            key_type = apiKey.KeyType,
-            scopes = apiKey.Scopes
-        });
-
-        if (runId.HasValue)
+            document = JsonDocument.Parse(responseBody);
+        }
+        catch (JsonException ex)
         {
-            var run = await db.AgentRuns.FirstOrDefaultAsync(item => item.Id == runId.Value, cancellationToken);
-            if (run is not null)
-            {
-                run.ApiKeyId = apiKey.Id;
-                run.AuthMode = apiKey.KeyType;
-                run.AuthMetadataJson = authMetadata;
-                run.TopK = topK;
-                run.ScoreThreshold = responseScoreThreshold;
-                run.BestRetrievalScore = bestScore;
-                run.QualityStatus = qualityStatus;
-                run.NoAnswerReason = noAnswerReason;
-                run.UpdatedAt = DateTime.UtcNow;
-            }
+            logger.LogWarning(
+                ex,
+                "Skipping run-trace enrichment: ai-services chat response was not valid JSON.");
+            return;
         }
 
-        if (traceId.HasValue)
+        using (document)
         {
-            var trace = await db.TraceRecords.FirstOrDefaultAsync(item => item.Id == traceId.Value, cancellationToken);
-            if (trace is not null)
+            var root = document.RootElement;
+            var runId = TryGetGuid(root, "run_id", "runId");
+            var traceId = TryGetGuid(root, "trace_id_record", "traceIdRecord");
+            var retrieval = TryGetProperty(root, "retrieval");
+            var noAnswer = retrieval.HasValue
+                && TryGetBoolean(retrieval.Value, "no_answer", "noAnswer") == true;
+            var bestScore = retrieval.HasValue ? TryGetDecimal(retrieval.Value, "max_score", "maxScore") : null;
+            var responseScoreThreshold = retrieval.HasValue
+                ? TryGetDecimal(retrieval.Value, "score_threshold", "scoreThreshold")
+                : scoreThreshold;
+            var qualityStatus = noAnswer ? "no_answer" : "passed";
+            var noAnswerReason = noAnswer ? "retrieval_score_below_threshold" : null;
+            var authMetadata = JsonSerializer.Serialize(new
             {
-                trace.ApiKeyId = apiKey.Id;
-                trace.AuthMode = apiKey.KeyType;
-                trace.AuthMetadataJson = authMetadata;
-                trace.TopK = topK;
-                trace.ScoreThreshold = responseScoreThreshold;
-                trace.BestRetrievalScore = bestScore;
-                trace.QualityStatus = qualityStatus;
-                trace.NoAnswerReason = noAnswerReason;
-            }
-        }
+                api_key_prefix = apiKey.Prefix,
+                key_type = apiKey.KeyType,
+                scopes = apiKey.Scopes
+            });
 
-        await db.SaveChangesAsync(cancellationToken);
+            if (runId.HasValue)
+            {
+                var run = await db.AgentRuns.FirstOrDefaultAsync(item => item.Id == runId.Value, cancellationToken);
+                if (run is not null)
+                {
+                    run.ApiKeyId = apiKey.Id;
+                    run.AuthMode = apiKey.KeyType;
+                    run.AuthMetadataJson = authMetadata;
+                    run.TopK = topK;
+                    run.ScoreThreshold = responseScoreThreshold;
+                    run.BestRetrievalScore = bestScore;
+                    run.QualityStatus = qualityStatus;
+                    run.NoAnswerReason = noAnswerReason;
+                    run.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            if (traceId.HasValue)
+            {
+                var trace = await db.TraceRecords.FirstOrDefaultAsync(item => item.Id == traceId.Value, cancellationToken);
+                if (trace is not null)
+                {
+                    trace.ApiKeyId = apiKey.Id;
+                    trace.AuthMode = apiKey.KeyType;
+                    trace.AuthMetadataJson = authMetadata;
+                    trace.TopK = topK;
+                    trace.ScoreThreshold = responseScoreThreshold;
+                    trace.BestRetrievalScore = bestScore;
+                    trace.QualityStatus = qualityStatus;
+                    trace.NoAnswerReason = noAnswerReason;
+                }
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private static JsonElement? TryGetProperty(JsonElement root, params string[] names)
