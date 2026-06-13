@@ -25,15 +25,26 @@ from pydantic import BaseModel, Field
 
 SERVICE_NAME = "ai-services"
 PHASE = "phase_1"
+# Hash fallback dimension. Kept distinct from the semantic model dimension so the
+# two are never confused. The hash backend is only used for CI/tests.
 EMBEDDING_DIMENSIONS = 64
 LOCAL_EMBEDDING_MODEL = "agentport-local-hash-64"
-SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf"}
+# Default semantic embedding: multilingual-e5-base at its native dimension.
+DEFAULT_E5_MODEL = "intfloat/multilingual-e5-base"
+EMBEDDING_DIM_E5 = 768
+SUPPORTED_EXTENSIONS = {".txt", ".md", ".pdf", ".docx"}
 ACTIVE_DOCUMENT_STATUSES = {"active", "ready", "succeeded"}
 ACTIVE_KNOWLEDGE_BASE_STATUSES = {"active", "ready", "succeeded"}
 DELETED_STATUSES = {"archived", "deleted"}
 NO_ANSWER_MESSAGE = "I could not find enough relevant information in the ingested documents to answer that."
-DEFAULT_RAG_SCORE_THRESHOLD = 0.0
+# e5 cosine similarity needs a meaningful floor so the no-answer fallback fires.
+DEFAULT_RAG_SCORE_THRESHOLD = 0.25
 DEFAULT_CHAT_MODEL = "local-extractive-rag"
+# Sovereign mode is default-on for DefterPort: egress to any non-local provider
+# is locked off regardless of route/provider config.
+DEFAULT_SOVEREIGN_MODE = True
+# When set, traces persist citation metadata only (no raw chunk body text).
+DEFAULT_TRACE_REDACT_CONTENT = True
 _sentence_transformer_model: Any = None
 
 
@@ -49,6 +60,33 @@ app = FastAPI(
     version="0.2.0",
     lifespan=lifespan,
 )
+
+
+def _extract_internal_token(request: Request) -> Optional[str]:
+    header = request.headers.get("x-internal-token")
+    if header:
+        return header.strip()
+    authorization = request.headers.get("authorization")
+    if authorization and authorization.lower().startswith("bearer "):
+        return authorization[7:].strip()
+    return None
+
+
+@app.middleware("http")
+async def internal_auth_middleware(request: Request, call_next):
+    # When AI_SERVICES_INTERNAL_TOKEN is set, every /v1/* call must carry it
+    # (Bearer or x-internal-token). Unset => open, so local dev/tests still work.
+    expected = os.getenv("AI_SERVICES_INTERNAL_TOKEN")
+    if expected and request.url.path.startswith("/v1/"):
+        provided = _extract_internal_token(request)
+        if not provided or provided != expected.strip():
+            from fastapi.responses import JSONResponse
+
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={"detail": "Missing or invalid internal service token."},
+            )
+    return await call_next(request)
 
 
 class RequestIdentity(BaseModel):
@@ -149,6 +187,10 @@ class Citation(BaseModel):
     file_name: str
     chunk_id: str
     score: float
+    # Character span/offset within the source document so a "Kaynak" label can be
+    # rendered without persisting the full chunk body.
+    char_start: Optional[int] = None
+    char_end: Optional[int] = None
 
 
 class RetrievalSummary(BaseModel):
@@ -322,6 +364,38 @@ def configured_rag_score_threshold(value: Optional[float] = None) -> float:
         return DEFAULT_RAG_SCORE_THRESHOLD
 
 
+def trace_redact_content() -> bool:
+    return env_flag("TRACE_REDACT_CONTENT", DEFAULT_TRACE_REDACT_CONTENT)
+
+
+def sovereign_mode_enabled() -> bool:
+    return env_flag("AGENTPORT_SOVEREIGN", DEFAULT_SOVEREIGN_MODE)
+
+
+def redact_trace_chunks(retrieved_chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """KVKK: persist citation metadata only — no raw chunk body text.
+
+    Keeps chunk_id, document_asset_id, score and citation span/offset so a
+    "Kaynak" label (file name + span) can still be rendered, but drops the body.
+    """
+    redacted: List[Dict[str, Any]] = []
+    for chunk in retrieved_chunks:
+        metadata = chunk.get("metadata") or {}
+        redacted.append(
+            {
+                "id": chunk.get("id"),
+                "citation_id": chunk.get("citation_id"),
+                "knowledge_base_id": chunk.get("knowledge_base_id"),
+                "score": chunk.get("score"),
+                "file_name": metadata.get("file_name"),
+                "char_start": metadata.get("char_start"),
+                "char_end": metadata.get("char_end"),
+                "redacted": True,
+            }
+        )
+    return redacted
+
+
 def env_flag(name: str, default: bool = False) -> bool:
     raw = os.getenv(name)
     if raw is None:
@@ -435,7 +509,7 @@ async def embed(payload: EmbedRequest, request: Request):
         trace_id=identity.trace_id,
         model=payload.model,
         input_count=len(payload.texts),
-        dimensions=EMBEDDING_DIMENSIONS,
+        dimensions=active_embedding_dim(),
         embeddings=embeddings,
     )
 
@@ -456,7 +530,7 @@ async def ingest_document(
     if extension not in SUPPORTED_EXTENSIONS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported file type '{extension}'. Supported: .txt, .md, .pdf.",
+            detail=f"Unsupported file type '{extension}'. Supported: .txt, .md, .pdf, .docx.",
         )
 
     payload = await file.read()
@@ -911,6 +985,8 @@ async def chat(payload: ChatRequest, request: Request):
             file_name=chunk["file_name"],
             chunk_id=str(chunk["id"]),
             score=chunk["score"],
+            char_start=chunk["model"].metadata.get("char_start"),
+            char_end=chunk["model"].metadata.get("char_end"),
         )
         for chunk in cited_chunks
     ]
@@ -1334,10 +1410,22 @@ def write_document_chunks(
         """,
         (now, now, document_asset_id),
     )
+    span_start = 0
     for index, chunk in enumerate(chunks):
         chunk_id = uuid4()
         citation_id = f"{safe_filename(file_name)}:{str(document_asset_id)[:8]}:{index + 1}"
-        embedding = vector_literal(embed_text(chunk))
+        embedding = vector_literal(embed_passage(chunk))
+        span_end = span_start + len(chunk)
+        chunk_metadata = {
+            "file_name": file_name,
+            "content_hash": payload_hash,
+            "embedding_model": embedding_backend_name(),
+            "embedding_dim": active_embedding_dim(),
+            "char_start": span_start,
+            "char_end": span_end,
+            "chunk_index": index,
+        }
+        span_start = span_end
         cur.execute(
             """
             INSERT INTO document_chunks
@@ -1359,7 +1447,7 @@ def write_document_chunks(
                 embedding,
                 payload_hash,
                 document_version,
-                json.dumps({"file_name": file_name, "content_hash": payload_hash}),
+                json.dumps(chunk_metadata),
                 now,
                 now,
             ),
@@ -1375,7 +1463,16 @@ def extract_text(file_name: str, payload: bytes) -> str:
 
         reader = PdfReader(BytesIO(payload))
         return "\n\n".join(page.extract_text() or "" for page in reader.pages)
+    if extension == ".docx":
+        return extract_docx_text(payload)
     return ""
+
+
+def extract_docx_text(payload: bytes) -> str:
+    from docx import Document
+
+    document = Document(BytesIO(payload))
+    return "\n".join(paragraph.text for paragraph in document.paragraphs)
 
 
 def chunk_text(text: str, max_chars: int = 900, overlap: int = 120) -> List[str]:
@@ -1405,6 +1502,23 @@ def chunk_text(text: str, max_chars: int = 900, overlap: int = 120) -> List[str]
     return chunks
 
 
+HASH_BACKEND_KEYS = {"hash", "local", "agentport-local-hash-64"}
+
+
+def use_hash_backend() -> bool:
+    """Hash backend is opt-in via EMBEDDING_BACKEND=hash (CI/tests). Default is e5."""
+    return os.getenv("EMBEDDING_BACKEND", "e5").strip().lower() in HASH_BACKEND_KEYS
+
+
+def e5_model_name() -> str:
+    return os.getenv("SENTENCE_TRANSFORMERS_MODEL", DEFAULT_E5_MODEL)
+
+
+def active_embedding_dim() -> int:
+    """Dimension of the vectors the active backend actually produces."""
+    return EMBEDDING_DIMENSIONS if use_hash_backend() else EMBEDDING_DIM_E5
+
+
 def hash_embedding(text: str, normalize: bool = True) -> List[float]:
     vector = [0.0] * EMBEDDING_DIMENSIONS
     tokens = re.findall(r"[a-z0-9]+", text.lower())
@@ -1420,45 +1534,50 @@ def hash_embedding(text: str, normalize: bool = True) -> List[float]:
     return [round(value, 6) for value in vector]
 
 
-def embed_text(text: str, normalize: bool = True) -> List[float]:
-    if os.getenv("EMBEDDING_BACKEND", "hash").lower() not in {"sentence-transformers", "sentence_transformers", "st"}:
+def embed_text(text: str, normalize: bool = True, is_query: bool = False) -> List[float]:
+    """Embed text. e5 requires distinct query/passage prefixes; the hash backend
+    ignores them. ``is_query=True`` for search queries, False for stored chunks."""
+    if use_hash_backend():
         return hash_embedding(text, normalize=normalize)
     try:
-        return sentence_transformer_embedding(text, normalize=normalize)
+        return sentence_transformer_embedding(text, normalize=normalize, is_query=is_query)
     except Exception:
-        if os.getenv("EMBEDDING_STRICT", "false").lower() == "true":
+        if os.getenv("EMBEDDING_STRICT", "false").strip().lower() == "true":
             raise
         return hash_embedding(text, normalize=normalize)
 
 
-def sentence_transformer_embedding(text: str, normalize: bool = True) -> List[float]:
+def embed_query(text: str, normalize: bool = True) -> List[float]:
+    return embed_text(text, normalize=normalize, is_query=True)
+
+
+def embed_passage(text: str, normalize: bool = True) -> List[float]:
+    return embed_text(text, normalize=normalize, is_query=False)
+
+
+def e5_prefixed(text: str, is_query: bool) -> str:
+    # multilingual-e5 expects "query: " for queries and "passage: " for documents.
+    return f"{'query' if is_query else 'passage'}: {text}"
+
+
+def sentence_transformer_embedding(text: str, normalize: bool = True, is_query: bool = False) -> List[float]:
     global _sentence_transformer_model
 
     if _sentence_transformer_model is None:
         from sentence_transformers import SentenceTransformer
 
-        model_name = os.getenv("SENTENCE_TRANSFORMERS_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-        _sentence_transformer_model = SentenceTransformer(model_name)
+        _sentence_transformer_model = SentenceTransformer(e5_model_name())
 
-    raw = _sentence_transformer_model.encode([text], normalize_embeddings=False)[0]
-    vector = [0.0] * EMBEDDING_DIMENSIONS
-    for index, value in enumerate(raw):
-        digest = hashlib.sha256(str(index).encode("utf-8")).digest()
-        target = int.from_bytes(digest[:2], "big") % EMBEDDING_DIMENSIONS
-        sign = 1.0 if digest[2] % 2 == 0 else -1.0
-        vector[target] += float(value) * sign
-    if normalize:
-        norm = math.sqrt(sum(value * value for value in vector))
-        if norm > 0:
-            vector = [value / norm for value in vector]
-    return [round(value, 6) for value in vector]
+    prefixed = e5_prefixed(text, is_query)
+    # e5 vectors are stored/compared at their native 768 dimension — no projection.
+    raw = _sentence_transformer_model.encode([prefixed], normalize_embeddings=normalize)[0]
+    return [round(float(value), 6) for value in raw]
 
 
 def embedding_backend_name() -> str:
-    if os.getenv("EMBEDDING_BACKEND", "hash").lower() in {"sentence-transformers", "sentence_transformers", "st"}:
-        model_name = os.getenv("SENTENCE_TRANSFORMERS_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-        return f"{model_name}:projected-{EMBEDDING_DIMENSIONS}"
-    return LOCAL_EMBEDDING_MODEL
+    if use_hash_backend():
+        return LOCAL_EMBEDDING_MODEL
+    return e5_model_name()
 
 
 def vector_literal(vector: List[float]) -> str:
@@ -1540,6 +1659,10 @@ def is_openai_compatible_provider(route_context: Dict[str, Any]) -> bool:
 def provider_enabled_by_env(route_context: Dict[str, Any]) -> bool:
     if is_ollama_provider(route_context):
         return env_flag("OLLAMA_ENABLED", True)
+    # Sovereign mode locks egress: no non-local provider can be enabled, regardless
+    # of route/provider config or PROVIDER_LIVE_CALLS. Cannot be re-opened by a route edit.
+    if sovereign_mode_enabled():
+        return False
     if is_openai_compatible_provider(route_context):
         prefix = provider_env_prefix(route_context.get("provider_name"))
         if prefix and os.getenv(f"{prefix}_ENABLED") is not None:
@@ -1647,7 +1770,9 @@ def retrieve_chunks(
     top_k: int,
     score_threshold: Optional[float] = None,
 ) -> List[Dict[str, Any]]:
-    embedding = vector_literal(embed_text(query))
+    embedding = vector_literal(embed_query(query))
+    query_backend = embedding_backend_name()
+    query_dim = active_embedding_dim()
     with db_connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -1680,6 +1805,27 @@ def retrieve_chunks(
     chunks = []
     for row in rows:
         metadata = row[6] if isinstance(row[6], dict) else json.loads(row[6] or "{}")
+        # Refuse to compare across mismatched embedding backends/dimensions instead
+        # of silently scoring query and stored vectors that mean different things.
+        stored_dim = metadata.get("embedding_dim")
+        stored_model = metadata.get("embedding_model")
+        if stored_dim is not None and int(stored_dim) != query_dim:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"Embedding dimension mismatch: query backend produces {query_dim}-dim "
+                    f"vectors ('{query_backend}') but stored chunks are {stored_dim}-dim "
+                    f"('{stored_model}'). Re-ingest the knowledge base with the active backend."
+                ),
+            )
+        if stored_model is not None and stored_model != query_backend:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    f"Embedding backend mismatch: query backend is '{query_backend}' but stored "
+                    f"chunks use '{stored_model}'. Re-ingest the knowledge base with the active backend."
+                ),
+            )
         score = float(row[5] or 0)
         if score_threshold is not None and score < score_threshold:
             continue
@@ -1835,6 +1981,14 @@ async def try_provider_answer(
             reason="provider_disabled",
             timeout_ms=timeout_ms,
             metadata={"runtime_route": route_metadata, "live_calls_enabled": live_calls_enabled},
+        )
+    if sovereign_mode_enabled() and not is_local_ollama:
+        return provider_skip_result(
+            provider=provider,
+            model=model,
+            reason="sovereign_mode",
+            timeout_ms=timeout_ms,
+            metadata={"runtime_route": route_metadata, "sovereign": True},
         )
     if not provider_enabled_by_env(route_context):
         return provider_skip_result(
@@ -2145,6 +2299,8 @@ def save_run_trace(
     now = utc_now()
     trace_id = uuid4()
     run_id = uuid4()
+    # KVKK: by default persist citation metadata only — never the raw chunk body.
+    persisted_chunks = retrieved_chunks if not trace_redact_content() else redact_trace_chunks(retrieved_chunks)
     input_tokens = estimate_tokens(question)
     output_tokens = estimate_tokens(answer)
     top_k = int(retrieval.get("top_k") or retrieval.get("topK") or 4)
@@ -2224,7 +2380,7 @@ def save_run_trace(
                     quality_status,
                     no_answer_reason,
                     json.dumps(citations),
-                    json.dumps(retrieved_chunks),
+                    json.dumps(persisted_chunks),
                     latency_ms,
                     estimated_cost,
                     json.dumps(
