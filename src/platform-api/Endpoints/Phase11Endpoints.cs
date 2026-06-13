@@ -18,9 +18,9 @@ public static class Phase11Endpoints
         api.MapGet("/dev/seed-status", GetDevSeedStatus);
         api.MapPost("/dev/reset", ResetDevSeed);
 
-        api.MapGet("/documents", ListDocuments);
-        api.MapDelete("/documents/{documentId:guid}", DeleteDocument);
-        api.MapPost("/documents/{documentId:guid}/reingest", ReingestDocument);
+        api.MapGet("/documents", ListDocuments).RequireApiKey("datasets:read");
+        api.MapDelete("/documents/{documentId:guid}", DeleteDocument).RequireApiKey("datasets:write");
+        api.MapPost("/documents/{documentId:guid}/reingest", ReingestDocument).RequireApiKey("datasets:write");
 
         api.MapPost("/api-keys/validate", ValidateApiKey);
 
@@ -32,12 +32,13 @@ public static class Phase11Endpoints
 
     private static async Task<IResult> GetDevSeedStatus(
         IHostEnvironment environment,
+        IConfiguration configuration,
         AgentPortDbContext db,
         CancellationToken cancellationToken)
     {
-        if (!environment.IsDevelopment())
+        if (!DevEndpointGate.IsEnabled(environment, configuration))
         {
-            return Problem(StatusCodes.Status404NotFound, "dev_endpoint_disabled", "Dev seed status is only available in Development.");
+            return DevEndpointGate.Disabled();
         }
 
         var workspace = await FindLocalWorkspace(db).FirstOrDefaultAsync(cancellationToken);
@@ -119,13 +120,14 @@ public static class Phase11Endpoints
     private static async Task<IResult> ResetDevSeed(
         [FromBody] DevResetRequest? request,
         IHostEnvironment environment,
+        IConfiguration configuration,
         AgentPortDbContext db,
         LocalBootstrapService bootstrap,
         CancellationToken cancellationToken)
     {
-        if (!environment.IsDevelopment())
+        if (!DevEndpointGate.IsEnabled(environment, configuration))
         {
-            return Problem(StatusCodes.Status404NotFound, "dev_endpoint_disabled", "Dev reset is only available in Development.");
+            return DevEndpointGate.Disabled();
         }
 
         var reseed = request?.Reseed ?? true;

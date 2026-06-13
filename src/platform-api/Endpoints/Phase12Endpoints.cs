@@ -16,18 +16,18 @@ public static class Phase12Endpoints
     {
         var api = routes.MapGroup("/api/v1").WithTags("Phase 1.2");
 
-        api.MapGet("/model-providers", ListModelProviders);
-        api.MapPost("/model-providers", CreateModelProvider);
-        api.MapPatch("/model-providers", PatchModelProvider);
+        api.MapGet("/model-providers", ListModelProviders).RequireApiKey("models:route");
+        api.MapPost("/model-providers", CreateModelProvider).RequireApiKey("models:route");
+        api.MapPatch("/model-providers", PatchModelProvider).RequireApiKey("models:route");
 
-        api.MapGet("/model-catalog", ListModelCatalog);
-        api.MapGet("/provider-status", ListProviderStatus);
-        api.MapGet("/local-models", ListLocalModels);
-        api.MapGet("/local-model/status", GetLocalModelStatus);
-        api.MapPost("/local-models/pull", QueueLocalModelPull);
-        api.MapGet("/provider-price-snapshots", ListProviderPriceSnapshots);
-        api.MapPost("/model-routes/{routeId:guid}/test", TestModelRoute);
-        api.MapPatch("/agent-definitions/{agentId:guid}/model-route", PatchAgentDefinitionModelRoute);
+        api.MapGet("/model-catalog", ListModelCatalog).RequireApiKey("models:route");
+        api.MapGet("/provider-status", ListProviderStatus).RequireApiKey("models:route");
+        api.MapGet("/local-models", ListLocalModels).RequireApiKey("models:route");
+        api.MapGet("/local-model/status", GetLocalModelStatus).RequireApiKey("models:route");
+        api.MapPost("/local-models/pull", QueueLocalModelPull).RequireApiKey("models:route");
+        api.MapGet("/provider-price-snapshots", ListProviderPriceSnapshots).RequireApiKey("models:route");
+        api.MapPost("/model-routes/{routeId:guid}/test", TestModelRoute).RequireApiKey("models:route");
+        api.MapPatch("/agent-definitions/{agentId:guid}/model-route", PatchAgentDefinitionModelRoute).RequireApiKey("agents:write");
 
         return routes;
     }

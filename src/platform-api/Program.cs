@@ -1,6 +1,8 @@
 using AgentPort.PlatformApi.Data;
 using AgentPort.PlatformApi.Endpoints;
+using AgentPort.PlatformApi.Infrastructure;
 using AgentPort.PlatformApi.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,6 +20,13 @@ builder.Services.AddDbContext<AgentPortDbContext>(options =>
     options.UseNpgsql(connectionString, npgsql =>
         npgsql.MigrationsAssembly("AgentPort.PlatformApi")));
 builder.Services.AddScoped<LocalBootstrapService>();
+
+builder.Services
+    .AddAuthentication(ApiKeyAuthorization.AuthenticationScheme)
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(
+        ApiKeyAuthorization.AuthenticationScheme,
+        _ => { });
+builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -44,6 +53,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/health/live", () => Results.Ok(new
 {

@@ -21,34 +21,45 @@ public static class Phase0Endpoints
             "operational",
             DateTime.UtcNow));
 
-        api.MapPost("/bootstrap/local", async (LocalBootstrapService bootstrap, CancellationToken cancellationToken) =>
+        api.MapPost("/bootstrap/local", async (
+            IHostEnvironment environment,
+            IConfiguration configuration,
+            LocalBootstrapService bootstrap,
+            CancellationToken cancellationToken) =>
         {
+            if (!DevEndpointGate.IsEnabled(environment, configuration))
+            {
+                return DevEndpointGate.Disabled();
+            }
+
             var result = await bootstrap.BootstrapLocalAsync(cancellationToken);
             return Results.Ok(result);
         });
 
-        api.MapGet("/workspaces", ListWorkspaces);
-        api.MapPost("/workspaces", CreateWorkspace);
+        api.MapGet("/workspaces", ListWorkspaces).RequireApiKey("workspaces:read");
+        api.MapPost("/workspaces", CreateWorkspace).RequireApiKey("workspaces:write");
 
-        api.MapGet("/projects", ListProjects);
-        api.MapPost("/projects", CreateProject);
+        api.MapGet("/projects", ListProjects).RequireApiKey("projects:read");
+        api.MapPost("/projects", CreateProject).RequireApiKey("projects:write");
 
-        api.MapGet("/model-routes", ListModelRoutes);
-        api.MapPost("/model-routes", CreateModelRoute);
+        api.MapGet("/model-routes", ListModelRoutes).RequireApiKey("models:route");
+        api.MapPost("/model-routes", CreateModelRoute).RequireApiKey("models:route");
 
-        api.MapGet("/agent-definitions", ListAgentDefinitions);
-        api.MapPost("/agent-definitions", CreateAgentDefinition);
+        api.MapGet("/agent-definitions", ListAgentDefinitions).RequireApiKey("agents:read");
+        api.MapPost("/agent-definitions", CreateAgentDefinition).RequireApiKey("agents:write");
         api.MapPost("/agent-definitions/{agentId:guid}/chat", ChatWithAgent);
 
-        api.MapGet("/datasets", ListDatasets);
-        api.MapPost("/datasets", CreateDataset);
-        api.MapPost("/datasets/{datasetId:guid}/documents", UploadDatasetDocument).DisableAntiforgery();
-        api.MapGet("/ingestion-jobs", ListIngestionJobs);
-        api.MapGet("/runs", ListRuns);
-        api.MapGet("/runs/{runId:guid}", GetRun);
-        api.MapGet("/traces/{traceId:guid}", GetTrace);
+        api.MapGet("/datasets", ListDatasets).RequireApiKey("datasets:read");
+        api.MapPost("/datasets", CreateDataset).RequireApiKey("datasets:write");
+        api.MapPost("/datasets/{datasetId:guid}/documents", UploadDatasetDocument)
+            .RequireApiKey("datasets:write")
+            .DisableAntiforgery();
+        api.MapGet("/ingestion-jobs", ListIngestionJobs).RequireApiKey("datasets:read");
+        api.MapGet("/runs", ListRuns).RequireApiKey("runs:read");
+        api.MapGet("/runs/{runId:guid}", GetRun).RequireApiKey("runs:read");
+        api.MapGet("/traces/{traceId:guid}", GetTrace).RequireApiKey("runs:read");
 
-        api.MapGet("/billing/provider-configs", ListPaymentProviderConfigs);
+        api.MapGet("/billing/provider-configs", ListPaymentProviderConfigs).RequireApiKey("billing:read");
 
         return routes;
     }
@@ -533,7 +544,7 @@ public static class Phase0Endpoints
             Name = $"{dataset.Name} Knowledge",
             Slug = slug,
             RetrievalStrategy = "basic-rag",
-            EmbeddingModel = "agentport-local-hash-64",
+            EmbeddingModel = "intfloat/multilingual-e5-base",
             VectorStore = "pgvector",
             Status = "ready"
         };
@@ -600,7 +611,14 @@ public static class Phase0Endpoints
 
         var aiServicesUrl = configuration["AI_SERVICES_URL"] ?? "http://localhost:5002";
         var client = httpClientFactory.CreateClient();
-        using var response = await client.PostAsync($"{aiServicesUrl.TrimEnd('/')}/v1/ingest", content, cancellationToken);
+        using var ingestRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{aiServicesUrl.TrimEnd('/')}/v1/ingest")
+        {
+            Content = content
+        };
+        AddInternalServiceToken(ingestRequest, configuration);
+        using var response = await client.SendAsync(ingestRequest, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
 
         return Results.Content(
@@ -727,10 +745,14 @@ public static class Phase0Endpoints
                 scopes = apiKeyValidation.ApiKey.Scopes
             }
         });
-        using var response = await client.PostAsync(
-            $"{aiServicesUrl.TrimEnd('/')}/v1/chat",
-            new StringContent(payload, Encoding.UTF8, "application/json"),
-            cancellationToken);
+        using var chatRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{aiServicesUrl.TrimEnd('/')}/v1/chat")
+        {
+            Content = new StringContent(payload, Encoding.UTF8, "application/json")
+        };
+        AddInternalServiceToken(chatRequest, configuration);
+        using var response = await client.SendAsync(chatRequest, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         if (response.IsSuccessStatusCode)
         {
@@ -1067,6 +1089,21 @@ public static class Phase0Endpoints
         }
 
         return null;
+    }
+
+    // When AI_SERVICES_INTERNAL_TOKEN is configured, forward it on outbound calls to ai-services so
+    // the ai-services side can enforce internal-only access. No-op when the token is absent.
+    private static void AddInternalServiceToken(HttpRequestMessage request, IConfiguration configuration)
+    {
+        var internalToken = configuration["AI_SERVICES_INTERNAL_TOKEN"]
+            ?? Environment.GetEnvironmentVariable("AI_SERVICES_INTERNAL_TOKEN");
+        if (string.IsNullOrWhiteSpace(internalToken))
+        {
+            return;
+        }
+
+        request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {internalToken}");
+        request.Headers.TryAddWithoutValidation("x-internal-token", internalToken);
     }
 
     private static string? GetRawApiKey(HttpContext httpContext)
