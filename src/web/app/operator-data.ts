@@ -30,125 +30,39 @@ export type SectionDetail = {
   emptyCopy: string;
 };
 
+// The English copy below is retained as a reference / fallback. The operator
+// console renders these via the i18n message catalogs (readiness.*,
+// overviewMetrics.*, setupQueue.*) keyed by the stable `key` field.
 export const readinessChecks: {
-  label: string;
-  state: string;
+  key: string;
   tone: ReadinessTone;
-  detail: string;
   href?: string;
 }[] = [
-  {
-    label: "Platform API",
-    state: "Proxy wired",
-    tone: "ready",
-    detail: "Web requests under /api/platform route to the local platform service.",
-    href: "/api/platform/status",
-  },
-  {
-    label: "AI service",
-    state: "Proxy wired",
-    tone: "ready",
-    detail: "Web requests under /api/ai route to the local AI service.",
-    href: "/api/ai/health",
-  },
-  {
-    label: "Bootstrap",
-    state: "Available",
-    tone: "ready",
-    detail: "Creates the local workspace, project, route, dataset, knowledge base, agent, wallet, and API key.",
-  },
-  {
-    label: "Dev seed/reset",
-    state: "Defensive UI",
-    tone: "placeholder",
-    detail: "Seed falls back to local bootstrap; reset reports backend availability when the dev endpoint is missing.",
-  },
-  {
-    label: "Model route",
-    state: "Local default",
-    tone: "ready",
-    detail: "Ollama is seeded as the default route, with extractive fallback when no model is reachable.",
-  },
-  {
-    label: "Agent definition",
-    state: "Created",
-    tone: "ready",
-    detail: "The bootstrap flow creates a document-QA agent linked to the default knowledge base.",
-  },
-  {
-    label: "Billing config placeholders",
-    state: "Placeholder",
-    tone: "placeholder",
-    detail: "Wallet and billing views reserve plan, wallet, and payment settings.",
-  },
-  {
-    label: "Docs and examples",
-    state: "Sample ready",
-    tone: "ready",
-    detail: "A support policy sample document is available for smoke testing the document-QA flow.",
-  },
-  {
-    label: "RAG quality controls",
-    state: "Client active",
-    tone: "ready",
-    detail: "Top K, score threshold, and no-answer visibility are exposed in the playground.",
-  },
+  { key: "platformApi", tone: "ready", href: "/api/platform/status" },
+  { key: "aiService", tone: "ready", href: "/api/ai/health" },
+  { key: "bootstrap", tone: "ready" },
+  { key: "devSeedReset", tone: "placeholder" },
+  { key: "modelRoute", tone: "ready" },
+  { key: "agentDefinition", tone: "ready" },
+  { key: "billingPlaceholders", tone: "placeholder" },
+  { key: "docsExamples", tone: "ready" },
+  { key: "ragQuality", tone: "ready" },
 ];
 
-export const overviewMetrics = [
-  {
-    label: "Workspace mode",
-    value: "Operator shell",
-    detail: "Document upload, RAG chat, training, evals, traces, and snippets are available locally.",
-  },
-  {
-    label: "Service proxies",
-    value: "2 configured",
-    detail: "/api/platform and /api/ai are routed by Next rewrites.",
-  },
-  {
-    label: "Launch scope",
-    value: "Phase 1.2",
-    detail: "Document-QA operations, model catalog UI, route status, defensive dev controls, and trace polish.",
-  },
-  {
-    label: "Billing state",
-    value: "Placeholders",
-    detail: "Wallet and billing paths exist without payment execution.",
-  },
+export const overviewMetrics: { key: string }[] = [
+  { key: "workspaceMode" },
+  { key: "serviceProxies" },
+  { key: "launchScope" },
+  { key: "billingState" },
 ];
 
-export const setupQueue = [
-  {
-    label: "Run onboarding",
-    detail: "Create or confirm the local workspace, route, dataset, knowledge base, agent, wallet, and API key.",
-    tone: "ready" as ReadinessTone,
-  },
-  {
-    label: "Upload documents",
-    detail: "Add .txt, .md, or .pdf documents and track inferred document assets from ingestion jobs.",
-    tone: "pending" as ReadinessTone,
-  },
-  {
-    label: "Ask in playground",
-    detail: "Use cited extractive RAG locally, or Ollama when it is enabled and reachable.",
-    tone: "ready" as ReadinessTone,
-  },
-  {
-    label: "Review traces",
-    detail: "Check answer, retrieved chunks, citations, run id, trace id, latency, cost, and trace metadata.",
-    tone: "ready" as ReadinessTone,
-  },
-  {
-    label: "Train a classifier",
-    detail: "Upload a CSV dataset and train a scikit-learn classifier from the Training Lab.",
-    tone: "ready" as ReadinessTone,
-  },
-  {
-    label: "Register model version",
-    detail: "Save trained artifacts to the model registry with candidate/staging/production aliases.",
-    tone: "ready" as ReadinessTone,
-  },
+export const setupQueue: { key: string; tone: ReadinessTone }[] = [
+  { key: "runOnboarding", tone: "ready" },
+  { key: "uploadDocuments", tone: "pending" },
+  { key: "askPlayground", tone: "ready" },
+  { key: "reviewTraces", tone: "ready" },
+  { key: "trainClassifier", tone: "ready" },
+  { key: "registerModel", tone: "ready" },
 ];
 
 export const sectionDetails: Record<SectionSlug, SectionDetail> = {
