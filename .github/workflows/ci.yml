@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Each job is independent so a failure in one stack does not mask the others.
+jobs:
+  dotnet:
+    name: .NET (platform-api)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Build platform-api
+        run: dotnet build src/platform-api/AgentPort.PlatformApi.csproj --configuration Release
+
+      - name: Test
+        run: dotnet test tests/PlatformApi.Tests/PlatformApi.Tests.csproj --configuration Release
+
+  python:
+    name: Python (ai-services)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/ai-services
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Test with coverage
+        run: pytest
+
+  web:
+    name: Web (next)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: src/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
