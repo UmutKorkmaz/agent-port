@@ -7,13 +7,16 @@ from fastapi.testclient import TestClient
 import main as ai_main
 from main import (
     ChatRequest,
+    EMBEDDING_DIM_E5,
     EMBEDDING_DIMENSIONS,
     NO_ANSWER_MESSAGE,
     RetrievedChunk,
+    active_embedding_dim,
     app,
     build_rag_answer,
     chunk_text,
     content_hash,
+    e5_prefixed,
     estimate_provider_cost,
     extractive_answer,
     hash_embedding,
@@ -22,8 +25,10 @@ from main import (
     is_active_document_status,
     is_deleted_status,
     normalized_provider_response,
+    redact_trace_chunks,
     resolve_runtime_route,
     try_provider_answer,
+    use_hash_backend,
     vector_literal,
 )
 
@@ -309,6 +314,9 @@ def test_provider_answer_allows_local_ollama_when_cloud_live_calls_are_disabled(
 def test_provider_answer_skips_cloud_live_calls_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PROVIDER_LIVE_CALLS", "false")
     monkeypatch.setenv("OPENAI_ENABLED", "true")
+    # Sovereign mode would short-circuit first; disable it to exercise the
+    # live-calls gating path specifically.
+    monkeypatch.setenv("AGENTPORT_SOVEREIGN", "false")
     chunk = RetrievedChunk(
         id="chunk-1",
         citation_id="policy.md:abc12345:1",
@@ -338,6 +346,74 @@ def test_provider_answer_skips_cloud_live_calls_when_disabled(monkeypatch: pytes
     assert result["model"] == "gpt-4.1-mini"
 
 
+def test_provider_answer_skips_non_local_provider_in_sovereign_mode(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("AGENTPORT_SOVEREIGN", "true")
+    monkeypatch.setenv("PROVIDER_LIVE_CALLS", "true")
+    monkeypatch.setenv("OPENAI_ENABLED", "true")
+    chunk = RetrievedChunk(
+        id="chunk-1",
+        citation_id="policy.md:abc12345:1",
+        knowledge_base_id="kb-1",
+        text="Refunds are available within 14 days.",
+        score=0.9,
+    )
+
+    result = asyncio.run(
+        try_provider_answer(
+            "How do refunds work?",
+            [chunk],
+            {
+                "provider_name": "openai",
+                "provider_kind": "openai-compatible",
+                "provider_base_url": "https://api.openai.com/v1",
+                "provider_enabled": True,
+                "route_enabled": True,
+                "model": "gpt-4.1-mini",
+            },
+            0.0,
+        )
+    )
+
+    assert result["route_health"] == "skipped"
+    assert result["metadata"]["reason"] == "sovereign_mode"
+    assert result["metadata"]["sovereign"] is True
+
+
+def test_redact_trace_chunks_drops_body_keeps_citation_metadata() -> None:
+    retrieved = [
+        {
+            "id": "chunk-1",
+            "citation_id": "policy.md:abc12345:1",
+            "knowledge_base_id": "kb-1",
+            "text": "Sensitive customer refund details that must not be persisted.",
+            "score": 0.42,
+            "metadata": {"file_name": "policy.md", "char_start": 0, "char_end": 60},
+        }
+    ]
+
+    redacted = redact_trace_chunks(retrieved)
+
+    assert "text" not in redacted[0]
+    assert redacted[0]["redacted"] is True
+    assert redacted[0]["citation_id"] == "policy.md:abc12345:1"
+    assert redacted[0]["file_name"] == "policy.md"
+    assert redacted[0]["char_start"] == 0
+    assert redacted[0]["char_end"] == 60
+    assert redacted[0]["score"] == 0.42
+
+
+def test_e5_prefixes_distinguish_queries_from_passages() -> None:
+    assert e5_prefixed("iade politikası", is_query=True) == "query: iade politikası"
+    assert e5_prefixed("iade politikası", is_query=False) == "passage: iade politikası"
+
+
+def test_hash_backend_uses_64_dim_and_e5_constant_is_768() -> None:
+    # Tests run with EMBEDDING_BACKEND=hash, so the active dim must be the hash dim.
+    assert use_hash_backend() is True
+    assert active_embedding_dim() == EMBEDDING_DIMENSIONS == 64
+    assert EMBEDDING_DIM_E5 == 768
+
+
 def test_chat_requires_agent_id_for_phase1() -> None:
     response = client.post(
         "/v1/chat",
@@ -357,3 +433,25 @@ def test_contract_validation_rejects_empty_embed_texts() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_pgvector_column_dim_matches_e5_embedding_dim() -> None:
+    """Cross-runtime contract guard: the .NET EF schema's document_chunks.Embedding
+    vector dimension MUST equal the Python e5 embedding dim, or ingest writes will be
+    rejected by Postgres. Pins the dimension agreement across the two runtimes so a
+    future migration cannot silently desync them."""
+    import pathlib
+    import re
+
+    repo_root = pathlib.Path(__file__).resolve().parents[3]
+    snapshot = (
+        repo_root
+        / "src/platform-api/Data/Migrations/AgentPortDbContextModelSnapshot.cs"
+    )
+    if not snapshot.exists():
+        pytest.skip("Platform API snapshot not present in this checkout")
+
+    dims = {int(m) for m in re.findall(r"vector\((\d+)\)", snapshot.read_text())}
+    assert dims == {EMBEDDING_DIM_E5}, (
+        f"pgvector column dim(s) {dims} must equal EMBEDDING_DIM_E5={EMBEDDING_DIM_E5}"
+    )
