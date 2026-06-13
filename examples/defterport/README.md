@@ -7,6 +7,7 @@ Sample fixtures for the DefterPort wedge: Turkish tax law seed documents and cli
 ```text
 examples/defterport/
   README.md                 This file
+  bootstrap.json            Firm install graph fixture (workspace, datasets, keys)
   seed-docs/
     VERSION                 Seed pack version stamp
     kanunlar/               Tax laws (KDV, GVK, KVK excerpts)
@@ -27,18 +28,45 @@ RESET_JSON="$(scripts/dev-reset.sh)"
 scripts/smoke.sh
 ```
 
-To ingest the DefterPort seed pack manually (once bootstrap fixture lands):
+To bootstrap the DefterPort firm install and ingest the seed pack in one step, run
+the bootstrap script. It reuses the base bootstrap endpoint, creates the two
+DefterPort datasets described in `bootstrap.json`, and uploads every file under
+`seed-docs/` (and `client-folder-sample/`) through the Platform API:
 
 ```bash
-# Placeholder — use Platform API ingest endpoints with API_KEY from dev-reset
-API_KEY="$(jq -r '.apiKey' <<<"$RESET_JSON")"
-DATASET_ID="<defterport-tax-law-dataset-id>"
-
-for f in examples/defterport/seed-docs/**/*.md; do
-  echo "Ingest: $f"
-  # curl -X POST .../ingest with file upload
-done
+scripts/dev-up.sh
+DEFTERPORT_JSON="$(scripts/defterport-bootstrap.sh)"
+echo "$DEFTERPORT_JSON" | jq .
 ```
+
+The script prints a JSON summary with the ids you need for follow-up calls:
+
+```json
+{
+  "status": "bootstrapped",
+  "workspaceId": "...",
+  "taxLawDatasetId": "...",
+  "clientFolderDatasetId": "...",
+  "agentDefinitionId": "...",
+  "apiKey": "..."
+}
+```
+
+Pull individual values back out with `jq`, e.g. to query the agent:
+
+```bash
+API_KEY="$(jq -r '.apiKey' <<<"$DEFTERPORT_JSON")"
+AGENT_ID="$(jq -r '.agentDefinitionId' <<<"$DEFTERPORT_JSON")"
+
+curl -fsS -X POST "http://localhost:5001/api/v1/agent-definitions/$AGENT_ID/chat" \
+  -H "content-type: application/json" \
+  -H "x-agentport-api-key: $API_KEY" \
+  -d '{"question":"KDV istisnası hangi işlemlerde uygulanabilir?","topK":4}' | jq .
+```
+
+Skip client-folder ingestion (seed pack only) with `scripts/defterport-bootstrap.sh --no-client`.
+Override service endpoints with the same env vars used by `dev-reset.sh`
+(`PLATFORM_API_URL`, `AI_SERVICES_URL`, `WEB_URL`).
 
 ## Seed Doc Pack
 
