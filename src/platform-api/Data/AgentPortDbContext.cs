@@ -541,7 +541,7 @@ public sealed class AgentPortDbContext : DbContext
         entity.Property(e => e.CitationId).HasMaxLength(128).IsRequired();
         entity.Property(e => e.Text).HasColumnType("text").IsRequired();
         entity.Property(e => e.Section).HasMaxLength(255);
-        entity.Property(e => e.Embedding).HasColumnType("vector(64)").IsRequired();
+        entity.Property(e => e.Embedding).HasColumnType("vector(768)").IsRequired();
         entity.Property(e => e.ContentHash).HasMaxLength(64);
         entity.Property(e => e.DocumentVersion).HasDefaultValue(1);
         entity.Property(e => e.IsActive).HasDefaultValue(true);
@@ -1242,7 +1242,7 @@ public sealed class DocumentChunk : EntityBase
     public int TokenEstimate { get; set; }
     public int? PageNumber { get; set; }
     public string? Section { get; set; }
-    public string Embedding { get; set; } = "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]";
+    public string Embedding { get; set; } = string.Empty;
     public string? ContentHash { get; set; }
     public int DocumentVersion { get; set; } = 1;
     public bool IsActive { get; set; } = true;

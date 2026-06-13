@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AgentPort.PlatformApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AgentPort.PlatformApi.Data.Migrations
 {
     [DbContext(typeof(AgentPortDbContext))]
-    partial class AgentPortDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260613072907_Phase13Embedding768")]
+    partial class Phase13Embedding768
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
