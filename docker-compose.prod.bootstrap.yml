@@ -1,0 +1,34 @@
+# AgentPort / DefterPort — FIRST-RUN bootstrap override (TEMPORARY).
+#
+# The destructive/seed endpoints (/api/v1/bootstrap/local, /api/v1/dev/reset) are
+# reachable ONLY when platform-api runs with BOTH:
+#   ASPNETCORE_ENVIRONMENT=Development  AND  AGENTPORT_ALLOW_DEV_ENDPOINTS=true
+# In normal prod they return 404. This override flips them on JUST for the initial
+# seed, and binds platform-api + ai-services to 127.0.0.1 (loopback only) so
+# scripts/defterport-bootstrap.sh can reach them from the host.
+#
+# Apply it ONLY for the bootstrap step, then bring the stack back up WITHOUT it:
+#
+#   # 1. start with the override (dev endpoints + loopback ports enabled)
+#   docker compose -f docker-compose.prod.yml -f docker-compose.prod.bootstrap.yml \
+#     --env-file .env.prod up -d --build
+#   # 2. run the seed (talks to 127.0.0.1:5001 / 127.0.0.1:5002)
+#   scripts/defterport-bootstrap.sh
+#   # 3. recreate WITHOUT the override so dev endpoints go back to 404 and the
+#   #    loopback ports disappear:
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+#
+# Do NOT leave this override in place. It is intentionally NOT part of the normal
+# bring-up command.
+
+services:
+  platform-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      AGENTPORT_ALLOW_DEV_ENDPOINTS: "true"
+    ports:
+      - "127.0.0.1:5001:5001"
+
+  ai-services:
+    ports:
+      - "127.0.0.1:5002:5002"
