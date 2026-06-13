@@ -106,3 +106,7 @@ static Task WriteHealthReport(HttpContext context, HealthReport report)
 
     return context.Response.WriteAsJsonAsync(payload);
 }
+
+// Exposes the implicit Program entry point to integration tests so they can host the real
+// application via WebApplicationFactory<Program>. The class is otherwise empty.
+public partial class Program;

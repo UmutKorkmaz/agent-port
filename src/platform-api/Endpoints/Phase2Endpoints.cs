@@ -107,6 +107,13 @@ public static class Phase2Endpoints
             j => j.WorkspaceId == request.WorkspaceId && j.ProjectId == request.ProjectId && j.Slug == slug, cancellationToken);
         if (exists) return Problem(StatusCodes.Status409Conflict, "training_job_slug_conflict", $"Training job slug '{slug}' already exists.");
 
+        // Carry the operator-selected task + target column into the persisted
+        // config (and, downstream, the ai-services /v1/train payload). An explicit
+        // ConfigJson still wins so callers can pin a fully-specified TrainJobConfig.
+        var config = TrainingJobMapping.ToConfig(request);
+        var configJson = request.ConfigJson
+            ?? System.Text.Json.JsonSerializer.Serialize(config);
+
         var job = new TrainingJob
         {
             WorkspaceId = request.WorkspaceId,
@@ -116,9 +123,9 @@ public static class Phase2Endpoints
             ModelRouteId = request.ModelRouteId,
             Name = request.Name.Trim(),
             Slug = slug,
-            Kind = string.IsNullOrWhiteSpace(request.Kind) ? "classification" : request.Kind.Trim(),
+            Kind = config.Task,
             Status = "queued",
-            ConfigJson = request.ConfigJson ?? "{}",
+            ConfigJson = configJson,
             HyperparametersJson = request.HyperparametersJson ?? "{}",
             EstimatedCost = request.EstimatedCost ?? 0,
         };

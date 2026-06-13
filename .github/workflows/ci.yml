@@ -26,6 +26,11 @@ jobs:
       - name: Test
         run: dotnet test tests/PlatformApi.Tests/PlatformApi.Tests.csproj --configuration Release
 
+      # Testcontainers spins up pgvector/pgvector:pg16 via the Docker daemon, which is available on
+      # GitHub-hosted ubuntu runners, to assert the auth floor against a real Postgres.
+      - name: Integration tests (Testcontainers Postgres)
+        run: dotnet test tests/PlatformApi.IntegrationTests/PlatformApi.IntegrationTests.csproj --configuration Release
+
   python:
     name: Python (ai-services)
     runs-on: ubuntu-latest
