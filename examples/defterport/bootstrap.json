@@ -1,0 +1,104 @@
+{
+  "environment": "defterport-local",
+  "description": "DefterPort firm install graph. Mirrors examples/phase0/bootstrap.local.json plus the Platform API Phase 0 create contracts. Consumed by scripts/defterport-bootstrap.sh.",
+  "workspace": {
+    "name": "DefterPort",
+    "slug": "defterport",
+    "kind": "firm-install",
+    "metadata": {
+      "product": "defterport",
+      "tenant": "single",
+      "kvkk": "on-prem"
+    }
+  },
+  "project": {
+    "name": "DefterPort Document QA",
+    "slug": "defterport-qa"
+  },
+  "modelRoute": {
+    "name": "DefterPort Ollama Route",
+    "slug": "defterport-ollama",
+    "providerName": "ollama",
+    "modelName": "gemma4:e4b",
+    "routeType": "chat",
+    "priority": 100,
+    "isDefault": true,
+    "isEnabled": true
+  },
+  "agentDefinition": {
+    "name": "DefterPort Mevzuat Asistanı",
+    "slug": "defterport-mevzuat",
+    "status": "active",
+    "instructions": "Türk vergi mevzuatı ve mükellef belgeleri üzerinde alıntılı yanıt veren asistansın. Yalnızca yüklenen belgelerdeki bilgilere dayan; yeterli bilgi yoksa 'Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.' yanıtını ver. Her yanıtta kaynak alıntılarını belirt."
+  },
+  "datasets": [
+    {
+      "name": "DefterPort Tax Law Pack",
+      "slug": "defterport-tax-law",
+      "kind": "documents",
+      "role": "tax-law-seed",
+      "sourceDir": "seed-docs",
+      "metadata": {
+        "product": "defterport",
+        "corpus": "tax-law",
+        "seedPack": true,
+        "language": "tr"
+      }
+    },
+    {
+      "name": "DefterPort Client Folder",
+      "slug": "defterport-client-folder",
+      "kind": "documents",
+      "role": "client-folder",
+      "sourceDir": "client-folder-sample",
+      "metadata": {
+        "product": "defterport",
+        "corpus": "client-folder",
+        "tenantScoped": true,
+        "language": "tr"
+      }
+    }
+  ],
+  "apiKeys": [
+    {
+      "name": "defterport-chat",
+      "scopes": ["runs:write"],
+      "metadata": {
+        "product": "defterport",
+        "purpose": "chat"
+      }
+    },
+    {
+      "name": "defterport-ingest",
+      "scopes": ["datasets:write"],
+      "metadata": {
+        "product": "defterport",
+        "purpose": "ingest"
+      }
+    },
+    {
+      "name": "defterport-trace-read",
+      "scopes": ["trace:read"],
+      "metadata": {
+        "product": "defterport",
+        "purpose": "trace:read"
+      }
+    }
+  ],
+  "services": {
+    "platformApiUrl": "http://localhost:5001",
+    "aiServicesUrl": "http://localhost:5002",
+    "webUrl": "http://localhost:3000"
+  },
+  "storage": {
+    "provider": "minio",
+    "endpoint": "http://localhost:9000",
+    "bucket": "agentport",
+    "region": "us-east-1",
+    "forcePathStyle": true
+  },
+  "queues": {
+    "brokerUrl": "amqp://agentport:agentport@localhost:5672/",
+    "defaultQueue": "agentport.jobs"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "seed_pack": "defterport-seed-pack",
+  "version": "0.1.0",
+  "version_updated": "2026-06-08",
+  "schema": "defterport-seed-doc-meta/v1",
+  "total_count": 6,
+  "placeholder_count": 6,
+  "launch_gate_min_docs": 20,
+  "documents": [
+    {
+      "path": "kanunlar/kdv-kanunu-ozet.md",
+      "meta": "kanunlar/kdv-kanunu-ozet.meta.json",
+      "title": "KDV Kanunu — Özet Referans (Placeholder)",
+      "category": "kanunlar",
+      "source": "placeholder",
+      "effective_date": "placeholder",
+      "law_code": "KDV-KANUN",
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "12d5876042d2889ccc003ad3f86c454461d29733e3702cbcbbecc5d040f82f43"
+    },
+    {
+      "path": "kanunlar/gvk-stopaj-ozet.md",
+      "meta": "kanunlar/gvk-stopaj-ozet.meta.json",
+      "title": "Gelir Vergisi Kanunu — Stopaj Özet (Placeholder)",
+      "category": "kanunlar",
+      "source": "placeholder",
+      "effective_date": "placeholder",
+      "law_code": "GVK",
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "2b00ef4c3060f0d98aafb8ae64e6b419666e2dfd2ccb60fbb0ab2f6e54c4015c"
+    },
+    {
+      "path": "tebligler/kdv-gut-istisna.md",
+      "meta": "tebligler/kdv-gut-istisna.meta.json",
+      "title": "KDV Genel Uygulama Tebliği — İstisna Bölümü (Placeholder)",
+      "category": "tebligler",
+      "source": "placeholder",
+      "effective_date": "placeholder",
+      "law_code": "KDV-GUT",
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "275af9121d71b866d9993d8f7be4a1c33ec1af615b973fa846e355008aa3bf5f"
+    },
+    {
+      "path": "sgk/ise-giris-cikis-rehber.md",
+      "meta": "sgk/ise-giris-cikis-rehber.meta.json",
+      "title": "SGK İşe Giriş / Çıkış — Hızlı Rehber (Placeholder)",
+      "category": "sgk",
+      "source": "placeholder",
+      "effective_date": "placeholder",
+      "law_code": null,
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "b1c63f89fb15f0c9a6d7fc9dee107a2692b4310afa9a6aae6f0d879be427b849"
+    },
+    {
+      "path": "efatura/efatura-zorunluluk.md",
+      "meta": "efatura/efatura-zorunluluk.meta.json",
+      "title": "e-Fatura Zorunluluk Eşikleri — Özet (Placeholder)",
+      "category": "efatura",
+      "source": "placeholder",
+      "effective_date": "placeholder",
+      "law_code": null,
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "9af23d5b910c3f1dfbfd6b2bda3962102735c526fc1c2b99500c9361262ca2cb"
+    },
+    {
+      "path": "ic-rehberler/beyanname-takvimi.md",
+      "meta": "ic-rehberler/beyanname-takvimi.meta.json",
+      "title": "İç Rehber — Beyanname Takvimi (Örnek Büro)",
+      "category": "ic-rehberler",
+      "source": "ornek-buro",
+      "effective_date": "placeholder",
+      "law_code": null,
+      "language": "tr",
+      "placeholder": true,
+      "sha256": "ff9af14914102d4b655e919069aab982a97ab5b072672acd0b05481d298a2478"
+    }
+  ]
+}

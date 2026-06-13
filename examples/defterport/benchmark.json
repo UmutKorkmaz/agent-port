@@ -1,0 +1,135 @@
+[
+  {
+    "id": "tax-01-kdv-gut-istisna",
+    "type": "tax-law",
+    "question_tr": "KDV Genel Uygulama Tebliği'ne göre istisna kapsamındaki teslimlerde indirilecek KDV nasıl değerlendirilir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kdv-gut-istisna.md", "category": "tebligler" }
+  },
+  {
+    "id": "tax-02-kdv-istisna-ihracat",
+    "type": "tax-law",
+    "question_tr": "İhracat istisnasında teslimlerde hangi şartlar aranır?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kdv-gut-istisna.md", "category": "tebligler" }
+  },
+  {
+    "id": "tax-03-kdv-matrah",
+    "type": "tax-law",
+    "question_tr": "KDV Kanunu'na göre verginin matrahı teslim ve hizmet işlemlerinde neyi ifade eder?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kdv-kanunu-ozet.md", "category": "kanunlar" }
+  },
+  {
+    "id": "tax-04-kdv-konu",
+    "type": "tax-law",
+    "question_tr": "KDV Kanunu hangi işlemler üzerinden alınacak vergiyi düzenler?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kdv-kanunu-ozet.md", "category": "kanunlar" }
+  },
+  {
+    "id": "tax-05-stopaj-serbest-meslek",
+    "type": "tax-law",
+    "question_tr": "Serbest meslek hizmetlerinde uygulanan stopaj oranı genel olarak nedir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "gvk-stopaj-ozet.md", "category": "kanunlar" }
+  },
+  {
+    "id": "tax-06-stopaj-kira",
+    "type": "tax-law",
+    "question_tr": "Gayrimenkul kira ödemelerinde stopaj kesintisi oranı kaçtır?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "gvk-stopaj-ozet.md", "category": "kanunlar" }
+  },
+  {
+    "id": "tax-07-stopaj-temettu",
+    "type": "tax-law",
+    "question_tr": "Temettü ödemelerinde stopaj kesintisi genel tabloda hangi oranda uygulanır?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "gvk-stopaj-ozet.md", "category": "kanunlar" }
+  },
+  {
+    "id": "tax-08-efatura-esik",
+    "type": "tax-law",
+    "question_tr": "e-Fatura zorunluluğu için brüt satış hasılatı eşiği kaç TL'dir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "efatura-zorunluluk.md", "category": "efatura" }
+  },
+  {
+    "id": "tax-09-earsiv",
+    "type": "tax-law",
+    "question_tr": "e-Arşiv Fatura uygulaması hangi mükellefler için ayrı kurallara tabidir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "efatura-zorunluluk.md", "category": "efatura" }
+  },
+  {
+    "id": "tax-10-sgk-ise-giris",
+    "type": "tax-law",
+    "question_tr": "SGK işe giriş bildirgesi ne zaman SGK sistemine iletilmelidir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "ise-giris-cikis-rehber.md", "category": "sgk" }
+  },
+  {
+    "id": "tax-11-beyanname-takvim",
+    "type": "tax-law",
+    "question_tr": "Aylık KDV beyannamesinin genel son günü ayı takip eden ayın kaçıncı günüdür?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "beyanname-takvimi.md", "category": "ic-rehberler" }
+  },
+  {
+    "id": "client-01-kira-kdv",
+    "type": "client-folder",
+    "question_tr": "Örnek Ltd. Şti. kira sözleşmesinde KDV kim tarafından ödeniyor?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kira-sozlesmesi-ozet.md", "category": "sozlesmeler" }
+  },
+  {
+    "id": "client-02-kira-bedeli",
+    "type": "client-folder",
+    "question_tr": "Örnek Ltd. Şti. kira sözleşmesinde aylık kira bedeli nedir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kira-sozlesmesi-ozet.md", "category": "sozlesmeler" }
+  },
+  {
+    "id": "client-03-kira-sure",
+    "type": "client-folder",
+    "question_tr": "Örnek Ltd. Şti. kira sözleşmesinin süresi kaç aydır?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "kira-sozlesmesi-ozet.md", "category": "sozlesmeler" }
+  },
+  {
+    "id": "client-04-kdv-donem-notu",
+    "type": "client-folder",
+    "question_tr": "Örnek Ltd. Şti. iç notunda hangi dönem KDV beyannamesi belirtilmiştir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "ornek-not.md", "category": "notlar" }
+  },
+  {
+    "id": "client-05-stopaj-danismanlik",
+    "type": "client-folder",
+    "question_tr": "Örnek Ltd. Şti. notlarında danışmanlık faturası kaç oranında stopajla işlenmiştir?",
+    "expect_no_answer": false,
+    "expected_citation": { "file_name": "ornek-not.md", "category": "notlar" }
+  },
+  {
+    "id": "noans-01-hava",
+    "type": "no-answer",
+    "question_tr": "Bugün hava nasıl?",
+    "expect_no_answer": true,
+    "expected_citation": null
+  },
+  {
+    "id": "noans-02-almanya-vat",
+    "type": "no-answer",
+    "question_tr": "Almanya VAT rate nedir?",
+    "expect_no_answer": true,
+    "expected_citation": null
+  },
+  {
+    "id": "noans-03-bitcoin",
+    "type": "no-answer",
+    "question_tr": "Bitcoin fiyatı bugün ne kadar?",
+    "expect_no_answer": true,
+    "expected_citation": null
+  }
+]
