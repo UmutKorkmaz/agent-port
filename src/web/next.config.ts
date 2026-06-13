@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// "Without i18n routing" mode: point the plugin at the request config that
+// resolves the locale from the NEXT_LOCALE cookie / Accept-Language.
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Proxy targets are env-driven so the same build runs both locally (defaults to
 // localhost) and inside the prod compose network (set to the compose service
@@ -27,4 +32,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
