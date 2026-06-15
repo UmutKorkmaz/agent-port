@@ -78,8 +78,16 @@ app.MapPhase11Api();
 app.MapPhase12Api();
 app.MapPhase2Api();
 
-using (var scope = app.Services.CreateScope())
+// Integration tests manage migrations explicitly (drop + migrate once per container).
+var skipStartupMigration =
+    string.Equals(
+        app.Configuration["AGENTPORT_SKIP_STARTUP_MIGRATION"],
+        "true",
+        StringComparison.OrdinalIgnoreCase);
+
+if (!skipStartupMigration)
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AgentPortDbContext>();
     await db.Database.MigrateAsync();
 }
