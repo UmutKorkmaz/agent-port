@@ -580,12 +580,16 @@ async def chat(payload: ChatRequest, request: Request):
     if agent is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agent definition was not found.")
 
-    knowledge_base_id = agent["knowledge_base_id"]
-    if knowledge_base_id is None:
+    knowledge_base_ids = agent.get("knowledge_base_ids") or (
+        [agent["knowledge_base_id"]] if agent.get("knowledge_base_id") else []
+    )
+    if not knowledge_base_ids:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Agent does not have a knowledge base.")
+    # Primary KB (most recently created) for run/trace attribution.
+    knowledge_base_id = knowledge_base_ids[0]
 
     score_threshold = configured_rag_score_threshold(payload.score_threshold)
-    retrieved = retrieve_chunks(knowledge_base_id, question, payload.top_k)
+    retrieved = retrieve_chunks(knowledge_base_ids, question, payload.top_k)
     retrieved_models = [chunk["model"] for chunk in retrieved]
     answer, answer_chunks, no_answer = build_rag_answer(question, retrieved_models, score_threshold)
     fallback_mode = "no_answer" if no_answer else "extractive"
