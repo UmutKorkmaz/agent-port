@@ -112,6 +112,7 @@ create_dataset() {
   status="$(curl -sS -o "$body" -w "%{http_code}" \
     -X POST "$PLATFORM_API_URL/api/v1/datasets" \
     -H "content-type: application/json" \
+    -H "x-agentport-api-key: $API_KEY" \
     -d "$payload")"
 
   if [ "$status" = "201" ] || [ "$status" = "200" ]; then
@@ -123,7 +124,8 @@ create_dataset() {
   # A slug conflict means the dataset already exists from a prior run; look it up.
   if [ "$status" = "409" ]; then
     local existing
-    existing="$(curl -fsS "$PLATFORM_API_URL/api/v1/datasets?workspaceId=$workspace_id&projectId=$project_id" \
+    existing="$(curl -fsS -H "x-agentport-api-key: $API_KEY" \
+      "$PLATFORM_API_URL/api/v1/datasets?workspaceId=$workspace_id&projectId=$project_id" \
       | jq -r --arg slug "$slug" 'map(select((.slug // .Slug) == $slug)) | (.[0].id // .[0].Id) // empty')"
     rm -f "$body"
     if [ -n "$existing" ]; then
@@ -151,6 +153,7 @@ ingest_dir() {
     ctype="$(content_type_for "$file")"
     echo "Ingesting $file -> dataset $dataset_id" >&2
     upload="$(curl -fsS -X POST "$PLATFORM_API_URL/api/v1/datasets/$dataset_id/documents" \
+      -H "x-agentport-api-key: $API_KEY" \
       -F "file=@$file;type=$ctype")"
     jq -c \
       --arg file "$file" \
