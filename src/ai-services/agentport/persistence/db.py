@@ -333,7 +333,7 @@ def write_document_chunks(
 
 
 def retrieve_chunks(
-    knowledge_base_id: UUID,
+    knowledge_base_id,
     query: str,
     top_k: int,
     score_threshold: Optional[float] = None,
@@ -341,10 +341,22 @@ def retrieve_chunks(
     embedding = vector_literal(embed_query(query))
     query_backend = embedding_backend_name()
     query_dim = active_embedding_dim()
+    # Accept a single KB id or a list (multi-corpus retrieval across all of an
+    # agent's knowledge bases). = ANY(%s) with an empty list matches nothing.
+    if isinstance(knowledge_base_id, (list, tuple, set)):
+        kb_ids = [str(k) for k in knowledge_base_id if k is not None]
+        if not kb_ids:
+            return []
+        # kb_predicate is a hardcoded constant (not user input); safe to inline.
+        kb_predicate = 'c."KnowledgeBaseId" = ANY(%s)'
+        params: tuple = (embedding, kb_ids, embedding, top_k)
+    else:
+        kb_predicate = 'c."KnowledgeBaseId" = %s'
+        params = (embedding, str(knowledge_base_id), embedding, top_k)
     with connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """
+                f"""
                 SELECT
                     c."Id",
                     c."CitationId",
@@ -357,7 +369,7 @@ def retrieve_chunks(
                 FROM document_chunks c
                 JOIN document_assets d ON d."Id" = c."DocumentAssetId"
                 JOIN knowledge_bases kb ON kb."Id" = c."KnowledgeBaseId"
-                WHERE c."KnowledgeBaseId" = %s
+                WHERE {kb_predicate}
                   AND c."IsActive" = TRUE
                   AND d."IsActive" = TRUE
                   AND d."DeletedAt" IS NULL
@@ -366,7 +378,7 @@ def retrieve_chunks(
                 ORDER BY c."Embedding" <=> %s::vector
                 LIMIT %s
                 """,
-                (embedding, knowledge_base_id, embedding, top_k),
+                params,
             )
             rows = cur.fetchall()
 
@@ -455,19 +467,24 @@ def load_agent(agent_id: UUID) -> Optional[Dict[str, Any]]:
                 WHERE a."Id" = %s
                   AND LOWER(a."Status") NOT IN ('archived', 'deleted')
                 ORDER BY kb."CreatedAt" DESC NULLS LAST
-                LIMIT 1
                 """,
                 (agent_id,),
             )
-            row = cur.fetchone()
-    if row is None:
+            rows = cur.fetchall()
+    if not rows:
         return None
+    # A LEFT JOIN yields one row per bound knowledge base; the agent columns are
+    # identical across rows. Collect every KB id so retrieval can span all of the
+    # agent's corpora instead of an arbitrary single one.
+    row = rows[0]
+    knowledge_base_ids = [r[4] for r in rows if r[4] is not None]
     return {
         "id": row[0],
         "workspace_id": row[1],
         "project_id": row[2],
         "model_route_id": row[3],
-        "knowledge_base_id": row[4],
+        "knowledge_base_id": knowledge_base_ids[0] if knowledge_base_ids else None,
+        "knowledge_base_ids": knowledge_base_ids,
         "model_route": {
             "name": row[5],
             "slug": row[6],
