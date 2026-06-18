@@ -1,0 +1,3 @@
+# Keeps src/web/public/ present so the production Docker build's
+# `COPY .../public ./public` step always has a directory to copy.
+# Add static assets (favicon, images served from /) here as needed.

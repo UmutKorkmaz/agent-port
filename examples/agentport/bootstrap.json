@@ -1,0 +1,104 @@
+{
+  "environment": "agentport-local",
+  "description": "AgentPort firm install graph. Mirrors examples/phase0/bootstrap.local.json plus the Platform API Phase 0 create contracts. Consumed by scripts/agentport-bootstrap.sh.",
+  "workspace": {
+    "name": "AgentPort",
+    "slug": "agentport",
+    "kind": "firm-install",
+    "metadata": {
+      "product": "agentport",
+      "tenant": "single",
+      "kvkk": "on-prem"
+    }
+  },
+  "project": {
+    "name": "AgentPort Document QA",
+    "slug": "agentport-qa"
+  },
+  "modelRoute": {
+    "name": "AgentPort Ollama Route",
+    "slug": "agentport-ollama",
+    "providerName": "ollama",
+    "modelName": "gemma4:e4b",
+    "routeType": "chat",
+    "priority": 100,
+    "isDefault": true,
+    "isEnabled": true
+  },
+  "agentDefinition": {
+    "name": "AgentPort Mevzuat Asistanı",
+    "slug": "agentport-mevzuat",
+    "status": "active",
+    "instructions": "Türk vergi mevzuatı ve mükellef belgeleri üzerinde alıntılı yanıt veren asistansın. Yalnızca yüklenen belgelerdeki bilgilere dayan; yeterli bilgi yoksa 'Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.' yanıtını ver. Her yanıtta kaynak alıntılarını belirt."
+  },
+  "datasets": [
+    {
+      "name": "AgentPort Tax Law Pack",
+      "slug": "agentport-tax-law",
+      "kind": "documents",
+      "role": "tax-law-seed",
+      "sourceDir": "seed-docs",
+      "metadata": {
+        "product": "agentport",
+        "corpus": "tax-law",
+        "seedPack": true,
+        "language": "tr"
+      }
+    },
+    {
+      "name": "AgentPort Client Folder",
+      "slug": "agentport-client-folder",
+      "kind": "documents",
+      "role": "client-folder",
+      "sourceDir": "client-folder-sample",
+      "metadata": {
+        "product": "agentport",
+        "corpus": "client-folder",
+        "tenantScoped": true,
+        "language": "tr"
+      }
+    }
+  ],
+  "apiKeys": [
+    {
+      "name": "agentport-chat",
+      "scopes": ["runs:write"],
+      "metadata": {
+        "product": "agentport",
+        "purpose": "chat"
+      }
+    },
+    {
+      "name": "agentport-ingest",
+      "scopes": ["datasets:write"],
+      "metadata": {
+        "product": "agentport",
+        "purpose": "ingest"
+      }
+    },
+    {
+      "name": "agentport-trace-read",
+      "scopes": ["trace:read"],
+      "metadata": {
+        "product": "agentport",
+        "purpose": "trace:read"
+      }
+    }
+  ],
+  "services": {
+    "platformApiUrl": "http://localhost:5001",
+    "aiServicesUrl": "http://localhost:5002",
+    "webUrl": "http://localhost:3000"
+  },
+  "storage": {
+    "provider": "minio",
+    "endpoint": "http://localhost:9000",
+    "bucket": "agentport",
+    "region": "us-east-1",
+    "forcePathStyle": true
+  },
+  "queues": {
+    "brokerUrl": "amqp://agentport:agentport@localhost:5672/",
+    "defaultQueue": "agentport.jobs"
+  }
+}

@@ -1,6 +1,8 @@
 using AgentPort.PlatformApi.Data;
 using AgentPort.PlatformApi.Endpoints;
+using AgentPort.PlatformApi.Infrastructure;
 using AgentPort.PlatformApi.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,6 +20,13 @@ builder.Services.AddDbContext<AgentPortDbContext>(options =>
     options.UseNpgsql(connectionString, npgsql =>
         npgsql.MigrationsAssembly("AgentPort.PlatformApi")));
 builder.Services.AddScoped<LocalBootstrapService>();
+
+builder.Services
+    .AddAuthentication(ApiKeyAuthorization.AuthenticationScheme)
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(
+        ApiKeyAuthorization.AuthenticationScheme,
+        _ => { });
+builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
@@ -45,6 +54,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/health/live", () => Results.Ok(new
 {
     Status = "live",
@@ -66,8 +78,18 @@ app.MapPhase11Api();
 app.MapPhase12Api();
 app.MapPhase2Api();
 
-using (var scope = app.Services.CreateScope())
+// Integration tests manage migrations explicitly (drop + migrate once per container).
+// Only honoured in Development to prevent a misconfigured prod from skipping migrations.
+var skipStartupMigration =
+    app.Environment.IsDevelopment() &&
+    string.Equals(
+        app.Configuration["AGENTPORT_SKIP_STARTUP_MIGRATION"],
+        "true",
+        StringComparison.OrdinalIgnoreCase);
+
+if (!skipStartupMigration)
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AgentPortDbContext>();
     await db.Database.MigrateAsync();
 }
@@ -94,3 +116,7 @@ static Task WriteHealthReport(HttpContext context, HealthReport report)
 
     return context.Response.WriteAsJsonAsync(payload);
 }
+
+// Exposes the implicit Program entry point to integration tests so they can host the real
+// application via WebApplicationFactory<Program>. The class is otherwise empty.
+public partial class Program;

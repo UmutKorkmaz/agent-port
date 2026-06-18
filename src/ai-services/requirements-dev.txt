@@ -1,0 +1,4 @@
+# Development / CI-only dependencies for ai-services.
+# Runtime deps live in requirements.txt (owned separately) — install both in CI.
+pytest==8.3.4
+pytest-cov==6.0.0

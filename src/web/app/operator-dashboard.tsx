@@ -1,29 +1,33 @@
+import { getTranslations } from "next-intl/server";
+
 import { OperatorDashboardClient } from "./operator-dashboard-client";
 import { sectionDetails, SectionSlug } from "./operator-data";
 
-export function OperatorDashboard({ sectionSlug }: { sectionSlug: SectionSlug }) {
+export async function OperatorDashboard({ sectionSlug }: { sectionSlug: SectionSlug }) {
   const section = sectionDetails[sectionSlug];
+  const t = await getTranslations();
+  const sectionKey = `sections.${sectionSlug}` as const;
 
   return (
     <div className="operator-page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">{section.eyebrow}</p>
-          <h1 className="page-title">{section.title}</h1>
-          <p className="page-copy">{section.summary}</p>
+          <p className="eyebrow">{t(`${sectionKey}.eyebrow`)}</p>
+          <h1 className="page-title">{t(`${sectionKey}.title`)}</h1>
+          <p className="page-copy">{t(`${sectionKey}.summary`)}</p>
         </div>
-        <aside className="environment-panel" aria-label="Workspace status">
+        <aside className="environment-panel" aria-label={t("shell.workspaceStatus")}>
           <div className="environment-row">
-            <span className="environment-label">Environment</span>
-            <span className="environment-value">Local integrated workspace</span>
+            <span className="environment-label">{t("shell.environment")}</span>
+            <span className="environment-value">{t("shell.environmentValue")}</span>
           </div>
           <div className="environment-row">
-            <span className="environment-label">Phase</span>
-            <span className="environment-value">Phase 1.2</span>
+            <span className="environment-label">{t("shell.phase")}</span>
+            <span className="environment-value">{t("shell.phaseValue")}</span>
           </div>
           <div className="environment-row">
-            <span className="environment-label">View status</span>
-            <span className="environment-value">{section.status}</span>
+            <span className="environment-label">{t("shell.viewStatus")}</span>
+            <span className="environment-value">{t(`${sectionKey}.status`)}</span>
           </div>
         </aside>
       </header>

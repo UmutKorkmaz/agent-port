@@ -3,6 +3,7 @@ using AgentPort.PlatformApi.Data;
 using AgentPort.PlatformApi.Infrastructure;
 using AgentPort.PlatformApi.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -21,34 +22,45 @@ public static class Phase0Endpoints
             "operational",
             DateTime.UtcNow));
 
-        api.MapPost("/bootstrap/local", async (LocalBootstrapService bootstrap, CancellationToken cancellationToken) =>
+        api.MapPost("/bootstrap/local", async (
+            IHostEnvironment environment,
+            IConfiguration configuration,
+            LocalBootstrapService bootstrap,
+            CancellationToken cancellationToken) =>
         {
+            if (!DevEndpointGate.IsEnabled(environment, configuration))
+            {
+                return DevEndpointGate.Disabled();
+            }
+
             var result = await bootstrap.BootstrapLocalAsync(cancellationToken);
             return Results.Ok(result);
         });
 
-        api.MapGet("/workspaces", ListWorkspaces);
-        api.MapPost("/workspaces", CreateWorkspace);
+        api.MapGet("/workspaces", ListWorkspaces).RequireApiKey("workspaces:read");
+        api.MapPost("/workspaces", CreateWorkspace).RequireApiKey("workspaces:write");
 
-        api.MapGet("/projects", ListProjects);
-        api.MapPost("/projects", CreateProject);
+        api.MapGet("/projects", ListProjects).RequireApiKey("projects:read");
+        api.MapPost("/projects", CreateProject).RequireApiKey("projects:write");
 
-        api.MapGet("/model-routes", ListModelRoutes);
-        api.MapPost("/model-routes", CreateModelRoute);
+        api.MapGet("/model-routes", ListModelRoutes).RequireApiKey("models:route");
+        api.MapPost("/model-routes", CreateModelRoute).RequireApiKey("models:route");
 
-        api.MapGet("/agent-definitions", ListAgentDefinitions);
-        api.MapPost("/agent-definitions", CreateAgentDefinition);
+        api.MapGet("/agent-definitions", ListAgentDefinitions).RequireApiKey("agents:read");
+        api.MapPost("/agent-definitions", CreateAgentDefinition).RequireApiKey("agents:write");
         api.MapPost("/agent-definitions/{agentId:guid}/chat", ChatWithAgent);
 
-        api.MapGet("/datasets", ListDatasets);
-        api.MapPost("/datasets", CreateDataset);
-        api.MapPost("/datasets/{datasetId:guid}/documents", UploadDatasetDocument).DisableAntiforgery();
-        api.MapGet("/ingestion-jobs", ListIngestionJobs);
-        api.MapGet("/runs", ListRuns);
-        api.MapGet("/runs/{runId:guid}", GetRun);
-        api.MapGet("/traces/{traceId:guid}", GetTrace);
+        api.MapGet("/datasets", ListDatasets).RequireApiKey("datasets:read");
+        api.MapPost("/datasets", CreateDataset).RequireApiKey("datasets:write");
+        api.MapPost("/datasets/{datasetId:guid}/documents", UploadDatasetDocument)
+            .RequireApiKey("datasets:write")
+            .DisableAntiforgery();
+        api.MapGet("/ingestion-jobs", ListIngestionJobs).RequireApiKey("datasets:read");
+        api.MapGet("/runs", ListRuns).RequireApiKey("runs:read");
+        api.MapGet("/runs/{runId:guid}", GetRun).RequireApiKey("runs:read");
+        api.MapGet("/traces/{traceId:guid}", GetTrace).RequireApiKey("runs:read");
 
-        api.MapGet("/billing/provider-configs", ListPaymentProviderConfigs);
+        api.MapGet("/billing/provider-configs", ListPaymentProviderConfigs).RequireApiKey("billing:read");
 
         return routes;
     }
@@ -533,7 +545,7 @@ public static class Phase0Endpoints
             Name = $"{dataset.Name} Knowledge",
             Slug = slug,
             RetrievalStrategy = "basic-rag",
-            EmbeddingModel = "agentport-local-hash-64",
+            EmbeddingModel = "intfloat/multilingual-e5-base",
             VectorStore = "pgvector",
             Status = "ready"
         };
@@ -560,8 +572,10 @@ public static class Phase0Endpoints
         AgentPortDbContext db,
         IHttpClientFactory httpClientFactory,
         IConfiguration configuration,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
+        var logger = loggerFactory.CreateLogger(typeof(Phase0Endpoints));
         if (file.Length == 0)
         {
             return ValidationProblem(new Dictionary<string, string[]> { ["file"] = ["File is required."] });
@@ -600,8 +614,23 @@ public static class Phase0Endpoints
 
         var aiServicesUrl = configuration["AI_SERVICES_URL"] ?? "http://localhost:5002";
         var client = httpClientFactory.CreateClient();
-        using var response = await client.PostAsync($"{aiServicesUrl.TrimEnd('/')}/v1/ingest", content, cancellationToken);
+        using var ingestRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{aiServicesUrl.TrimEnd('/')}/v1/ingest")
+        {
+            Content = content
+        };
+        AddInternalServiceToken(ingestRequest, configuration);
+        using var response = await client.SendAsync(ingestRequest, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogWarning(
+                "ai-services ingest proxy returned non-success status {StatusCode} for dataset {DatasetId}.",
+                (int)response.StatusCode,
+                dataset.Id);
+        }
 
         return Results.Content(
             responseBody,
@@ -646,8 +675,10 @@ public static class Phase0Endpoints
         AgentPortDbContext db,
         IHttpClientFactory httpClientFactory,
         IConfiguration configuration,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
     {
+        var logger = loggerFactory.CreateLogger(typeof(Phase0Endpoints));
         if (string.IsNullOrWhiteSpace(request.Question))
         {
             return ValidationProblem(new Dictionary<string, string[]> { ["question"] = ["Question is required."] });
@@ -727,10 +758,14 @@ public static class Phase0Endpoints
                 scopes = apiKeyValidation.ApiKey.Scopes
             }
         });
-        using var response = await client.PostAsync(
-            $"{aiServicesUrl.TrimEnd('/')}/v1/chat",
-            new StringContent(payload, Encoding.UTF8, "application/json"),
-            cancellationToken);
+        using var chatRequest = new HttpRequestMessage(
+            HttpMethod.Post,
+            $"{aiServicesUrl.TrimEnd('/')}/v1/chat")
+        {
+            Content = new StringContent(payload, Encoding.UTF8, "application/json")
+        };
+        AddInternalServiceToken(chatRequest, configuration);
+        using var response = await client.SendAsync(chatRequest, cancellationToken);
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         if (response.IsSuccessStatusCode)
         {
@@ -740,7 +775,15 @@ public static class Phase0Endpoints
                 apiKeyValidation.ApiKey!,
                 Math.Clamp(request.TopK ?? 4, 1, 12),
                 request.ScoreThreshold,
+                logger,
                 cancellationToken);
+        }
+        else
+        {
+            logger.LogWarning(
+                "ai-services chat proxy returned non-success status {StatusCode} for agent {AgentId}.",
+                (int)response.StatusCode,
+                agent.Id);
         }
 
         return Results.Content(responseBody, "application/json", statusCode: (int)response.StatusCode);
@@ -950,62 +993,78 @@ public static class Phase0Endpoints
         ApiKey apiKey,
         int topK,
         decimal? scoreThreshold,
+        ILogger logger,
         CancellationToken cancellationToken)
     {
-        using var document = JsonDocument.Parse(responseBody);
-        var root = document.RootElement;
-        var runId = TryGetGuid(root, "run_id", "runId");
-        var traceId = TryGetGuid(root, "trace_id_record", "traceIdRecord");
-        var retrieval = TryGetProperty(root, "retrieval");
-        var noAnswer = retrieval.HasValue
-            && TryGetBoolean(retrieval.Value, "no_answer", "noAnswer") == true;
-        var bestScore = retrieval.HasValue ? TryGetDecimal(retrieval.Value, "max_score", "maxScore") : null;
-        var responseScoreThreshold = retrieval.HasValue
-            ? TryGetDecimal(retrieval.Value, "score_threshold", "scoreThreshold")
-            : scoreThreshold;
-        var qualityStatus = noAnswer ? "no_answer" : "passed";
-        var noAnswerReason = noAnswer ? "retrieval_score_below_threshold" : null;
-        var authMetadata = JsonSerializer.Serialize(new
+        JsonDocument document;
+        try
         {
-            api_key_prefix = apiKey.Prefix,
-            key_type = apiKey.KeyType,
-            scopes = apiKey.Scopes
-        });
-
-        if (runId.HasValue)
+            document = JsonDocument.Parse(responseBody);
+        }
+        catch (JsonException ex)
         {
-            var run = await db.AgentRuns.FirstOrDefaultAsync(item => item.Id == runId.Value, cancellationToken);
-            if (run is not null)
-            {
-                run.ApiKeyId = apiKey.Id;
-                run.AuthMode = apiKey.KeyType;
-                run.AuthMetadataJson = authMetadata;
-                run.TopK = topK;
-                run.ScoreThreshold = responseScoreThreshold;
-                run.BestRetrievalScore = bestScore;
-                run.QualityStatus = qualityStatus;
-                run.NoAnswerReason = noAnswerReason;
-                run.UpdatedAt = DateTime.UtcNow;
-            }
+            logger.LogWarning(
+                ex,
+                "Skipping run-trace enrichment: ai-services chat response was not valid JSON.");
+            return;
         }
 
-        if (traceId.HasValue)
+        using (document)
         {
-            var trace = await db.TraceRecords.FirstOrDefaultAsync(item => item.Id == traceId.Value, cancellationToken);
-            if (trace is not null)
+            var root = document.RootElement;
+            var runId = TryGetGuid(root, "run_id", "runId");
+            var traceId = TryGetGuid(root, "trace_id_record", "traceIdRecord");
+            var retrieval = TryGetProperty(root, "retrieval");
+            var noAnswer = retrieval.HasValue
+                && TryGetBoolean(retrieval.Value, "no_answer", "noAnswer") == true;
+            var bestScore = retrieval.HasValue ? TryGetDecimal(retrieval.Value, "max_score", "maxScore") : null;
+            var responseScoreThreshold = retrieval.HasValue
+                ? TryGetDecimal(retrieval.Value, "score_threshold", "scoreThreshold")
+                : scoreThreshold;
+            var qualityStatus = noAnswer ? "no_answer" : "passed";
+            var noAnswerReason = noAnswer ? "retrieval_score_below_threshold" : null;
+            var authMetadata = JsonSerializer.Serialize(new
             {
-                trace.ApiKeyId = apiKey.Id;
-                trace.AuthMode = apiKey.KeyType;
-                trace.AuthMetadataJson = authMetadata;
-                trace.TopK = topK;
-                trace.ScoreThreshold = responseScoreThreshold;
-                trace.BestRetrievalScore = bestScore;
-                trace.QualityStatus = qualityStatus;
-                trace.NoAnswerReason = noAnswerReason;
-            }
-        }
+                api_key_prefix = apiKey.Prefix,
+                key_type = apiKey.KeyType,
+                scopes = apiKey.Scopes
+            });
 
-        await db.SaveChangesAsync(cancellationToken);
+            if (runId.HasValue)
+            {
+                var run = await db.AgentRuns.FirstOrDefaultAsync(item => item.Id == runId.Value, cancellationToken);
+                if (run is not null)
+                {
+                    run.ApiKeyId = apiKey.Id;
+                    run.AuthMode = apiKey.KeyType;
+                    run.AuthMetadataJson = authMetadata;
+                    run.TopK = topK;
+                    run.ScoreThreshold = responseScoreThreshold;
+                    run.BestRetrievalScore = bestScore;
+                    run.QualityStatus = qualityStatus;
+                    run.NoAnswerReason = noAnswerReason;
+                    run.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            if (traceId.HasValue)
+            {
+                var trace = await db.TraceRecords.FirstOrDefaultAsync(item => item.Id == traceId.Value, cancellationToken);
+                if (trace is not null)
+                {
+                    trace.ApiKeyId = apiKey.Id;
+                    trace.AuthMode = apiKey.KeyType;
+                    trace.AuthMetadataJson = authMetadata;
+                    trace.TopK = topK;
+                    trace.ScoreThreshold = responseScoreThreshold;
+                    trace.BestRetrievalScore = bestScore;
+                    trace.QualityStatus = qualityStatus;
+                    trace.NoAnswerReason = noAnswerReason;
+                }
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+        }
     }
 
     private static JsonElement? TryGetProperty(JsonElement root, params string[] names)
@@ -1067,6 +1126,21 @@ public static class Phase0Endpoints
         }
 
         return null;
+    }
+
+    // When AI_SERVICES_INTERNAL_TOKEN is configured, forward it on outbound calls to ai-services so
+    // the ai-services side can enforce internal-only access. No-op when the token is absent.
+    private static void AddInternalServiceToken(HttpRequestMessage request, IConfiguration configuration)
+    {
+        var internalToken = configuration["AI_SERVICES_INTERNAL_TOKEN"]
+            ?? Environment.GetEnvironmentVariable("AI_SERVICES_INTERNAL_TOKEN");
+        if (string.IsNullOrWhiteSpace(internalToken))
+        {
+            return;
+        }
+
+        request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {internalToken}");
+        request.Headers.TryAddWithoutValidation("x-internal-token", internalToken);
     }
 
     private static string? GetRawApiKey(HttpContext httpContext)

@@ -1,0 +1,710 @@
+{
+  "nav": {
+    "brandName": "AgentPort",
+    "brandMeta": "Faz 1.2 operatör konsolu",
+    "ariaLabel": "Operatör gezinmesi",
+    "toggleLabel": "Gezinmeyi aç/kapat",
+    "toggleOpen": "Gezinme menüsünü aç",
+    "toggleClose": "Gezinme menüsünü kapat",
+    "drawerLabel": "Operatör gezinme çekmecesi",
+    "overview": "Genel Bakış",
+    "stack-chooser": "Yığın Seçici",
+    "builder": "Oluşturucu",
+    "model-catalog": "Model Kataloğu",
+    "playground": "Deneme Alanı",
+    "datasets": "Veri Kümeleri",
+    "training": "Eğitim",
+    "evals": "Değerlendirmeler",
+    "traces": "İzler",
+    "deployments": "Dağıtımlar",
+    "wallet": "Cüzdan",
+    "billing": "Faturalandırma",
+    "settings": "Ayarlar"
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "submit": "Gönder",
+    "refresh": "Yenile",
+    "loading": "Yükleniyor",
+    "retry": "Yeniden Dene",
+    "close": "Kapat",
+    "none": "yok",
+    "notReported": "raporlanmadı",
+    "notLoaded": "yüklenmedi",
+    "notSelected": "seçilmedi",
+    "unknown": "bilinmiyor",
+    "placeholder": "yer tutucu"
+  },
+  "locale": {
+    "label": "Dil",
+    "en": "İngilizce",
+    "tr": "Türkçe"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Açık",
+    "dark": "Koyu",
+    "switchToLight": "Açık temaya geç",
+    "switchToDark": "Koyu temaya geç"
+  },
+  "shell": {
+    "workspaceStatus": "Çalışma alanı durumu",
+    "environment": "Ortam",
+    "environmentValue": "Yerel entegre çalışma alanı",
+    "phase": "Faz",
+    "phaseValue": "Faz 1.2",
+    "viewStatus": "Görünüm durumu"
+  },
+  "sectionView": {
+    "operatorSurface": "Operatör yüzeyi",
+    "operatorSurfaceCopy": "Operatör konsolunun bu bölümü için sunulan birincil kontroller.",
+    "integrationQueue": "Entegrasyon kuyruğu",
+    "integrationQueueCopy": "Platform API'sinin bu bölümü canlı verilere bağlamak için hâlâ ihtiyaç duyduğu sözleşmeler.",
+    "serviceLinks": "Servis bağlantıları",
+    "serviceLinksCopy": "Arka plandaki servisler için doğrudan sağlık uç noktaları.",
+    "platformApiStatus": "Platform API durumu",
+    "aiServiceHealth": "Yapay zeka servisi sağlığı",
+    "currentState": "{title} mevcut durumu"
+  },
+  "routeStatus": {
+    "selectedRoute": "Seçili rota",
+    "provider": "Sağlayıcı",
+    "route": "Rota",
+    "model": "Model",
+    "localHealth": "Yerel sağlık",
+    "noRouteSelected": "Rota seçilmedi",
+    "noRoutesLoaded": "Rota yüklenmedi"
+  },
+  "overview": {
+    "firstRunTitle": "İlk çalıştırma",
+    "firstRunCopy": "Yerel çalışma alanını, veri kümesini, bilgi tabanını, model rotasını ve belge-QA aracısını çevrimiçi hale getirin.",
+    "runOnboarding": "İlk kurulumu çalıştır",
+    "creating": "Oluşturuluyor...",
+    "seed": "Tohumla",
+    "seeding": "Tohumlanıyor...",
+    "reset": "Sıfırla",
+    "resetting": "Sıfırlanıyor...",
+    "platformApi": "Platform API",
+    "aiService": "Yapay zeka servisi",
+    "workspace": "Çalışma alanı",
+    "runOnboardingDetail": "İlk kurulumu çalıştır",
+    "dataset": "Veri kümesi",
+    "docsChunks": "{documents} belge, {chunks} parça",
+    "noDatasetLoaded": "Veri kümesi yüklenmedi",
+    "localFlowTitle": "Yerel akış",
+    "localFlowCopy": "Faz 1.2, belge-QA işlemleri, model kataloğu görünürlüğü, rota durumu, iz incelemesi ve yapılandırma yer tutucularına odaklanır.",
+    "workspaceSnapshotTitle": "Çalışma alanı anlık görüntüsü",
+    "workspaceSnapshotCopy": "İlk kurulumdan gelen canlı tanımlayıcılar ilk kurulum sonrasında gösterilir.",
+    "agentLabel": "Aracı",
+    "agentDetail": "Belge-QA aracı tanımı",
+    "knowledgeBaseLabel": "Bilgi tabanı",
+    "knowledgeBaseDetail": "pgvector destekli yerel depo",
+    "readinessTitle": "Hazırlık kontrol listesi",
+    "readinessCopy": "Faz 1 durumu ve kalan yer tutucular."
+  },
+  "datasets": {
+    "documentSourcesTitle": "Belge kaynakları",
+    "documentSourcesCopy": "Arka uç kontrolleri mevcut olduğunda belge varlıklarını yükleyin, alım durumunu inceleyin ve yönetin.",
+    "refresh": "Yenile",
+    "ingesting": "Alınıyor...",
+    "uploadDocument": "Belge yükle",
+    "noDocumentsTitle": "Belge yüklenmedi",
+    "noDocumentsCopy": "Bir belge yükleyin veya bir arka uç belge listesi uç noktası eklendikten sonra yenileyin.",
+    "noDocumentsAction": "Belge yükle",
+    "noDocumentsWatermark": "AgentPort bilgi tabanı",
+    "document": "belge",
+    "chunksAndId": "{chunks} parça - {id}",
+    "updated": "Güncellendi {date}",
+    "reingest": "Yeniden al",
+    "reingesting": "Yeniden alınıyor...",
+    "delete": "Sil",
+    "deleting": "Siliniyor...",
+    "datasetsTitle": "Veri kümeleri",
+    "datasetSummary": "{documents} belge, {chunks} parça",
+    "ingestionJobsTitle": "Alım işleri",
+    "noIngestionJobs": "Henüz alım işi yok.",
+    "jobSummary": "{status} - {chunks} parça - belge {documentId} - {date}"
+  },
+  "playground": {
+    "askTitle": "Belge aracısına sor",
+    "askCopy": "Yerel belge-QA aracısına sormadan önce getirme derinliğini ve yanıt görünürlüğünü ayarlayın.",
+    "belowThreshold": "eşiğin altında",
+    "qualityPass": "kalite geçişi",
+    "notRun": "çalıştırılmadı",
+    "topK": "İlk K",
+    "scoreThreshold": "Puan eşiği",
+    "modelRoute": "Model rotası",
+    "apiKey": "API anahtarı",
+    "bootstrapKeyLoaded": "İlk kurulum anahtarı yüklendi",
+    "pasteLocalApiKey": "Yerel API anahtarını yapıştırın",
+    "showNoAnswer": "Eşiğin altında yanıt-yok göster",
+    "ask": "Sor",
+    "asking": "Soruluyor...",
+    "answerLabel": "Yanıt",
+    "routeLabel": "Rota: {route}",
+    "bestScore": "En iyi puan: {score}",
+    "visibleChunks": "Görünür parçalar: {visible}/{total}",
+    "run": "Çalıştırma: {value}",
+    "trace": "İz: {value}",
+    "latency": "Gecikme: {value}",
+    "latencyMs": "{ms} ms",
+    "pendingRefresh": "yenileme bekleniyor",
+    "costEstimate": "Maliyet tahmini: {value}",
+    "loadTrace": "İzi yükle",
+    "notCaptured": "yakalanmadı",
+    "routeStatusTitle": "Rota durumu",
+    "routeStatusCopy": "Seçili rota için sağlayıcı, rota, model ve yerel sağlık durumu.",
+    "citationsTitle": "Kaynaklar ve parçalar",
+    "citationsCopy": "İstemci tarafı eşikleme, neyin yanıtlanabilir kanıt sayılacağını kontrol eder.",
+    "citationFallback": "kaynak",
+    "unknownFile": "bilinmeyen dosya",
+    "noChunksTitle": "Eşiğin üzerinde parça yok",
+    "noChunksCopy": "Daha fazla kanıt incelemek için puan eşiğini düşürün veya İlk K değerini artırın.",
+    "tracePreviewTitle": "İz önizlemesi",
+    "tracePreviewCopy": "En son izlenebilir çalıştırmadan jeton kullanımı ve maliyet.",
+    "trace2": "İz",
+    "tokens": "Jetonlar",
+    "tokensSummary": "{input} giriş / {output} çıkış",
+    "cost": "Maliyet"
+  },
+  "traces": {
+    "recentRunsTitle": "Son çalıştırmalar",
+    "recentRunsCopy": "İz kimlikleri, gecikme, yedek mod ve kaynak sayılarıyla deneme alanı ve aracı çağrıları.",
+    "refresh": "Yenile",
+    "noRunsTitle": "Henüz çalıştırma yakalanmadı",
+    "noRunsCopy": "İlk izlenebilir çalıştırmayı oluşturmak için deneme alanında bir soru sorun.",
+    "noRunsAction": "Deneme alanını aç",
+    "noRunsWatermark": "AgentPort izleri",
+    "ms": "{ms} ms",
+    "citationsCount": "{count} kaynak",
+    "chunksCount": "{count} parça",
+    "loadTrace": "İzi yükle",
+    "loading": "Yükleniyor...",
+    "traceDetailTitle": "İz detayı",
+    "traceDetailCopy": "Ham iz meta verileri yoğun operasyonel alanlara daraltılmış halde kalır.",
+    "traceId": "İz kimliği",
+    "correlation": "Korelasyon",
+    "modelRoute": "Model rotası",
+    "tokens": "Jetonlar",
+    "tokensSummary": "{input} / {output}",
+    "humanReviewTitle": "İnsan inceleme kuyruğu",
+    "noReviews": "Henüz inceleme kaydı yok.",
+    "noLabel": "etiket yok",
+    "unassigned": "atanmamış",
+    "reviewSummary": "{queue} - {status} - {label} - inceleyen {reviewer}"
+  },
+  "training": {
+    "trainingJobsTitle": "Eğitim işleri",
+    "trainingJobsCopy": "Aktif veri kümesine karşı bir sınıflandırma veya regresyon işi sıraya alın ve ölçümlerinin sonuçlanmasını izleyin.",
+    "jobNamePrefix": "Sınıflandırıcı {timestamp}",
+    "createFailed": "Eğitim işi oluşturulamadı.",
+    "targetColumn": "Hedef sütun",
+    "targetColumnPlaceholder": "örn. etiket, kategori, fiyat",
+    "task": "Görev",
+    "classification": "Sınıflandırma",
+    "regression": "Regresyon",
+    "createTrainingJob": "Eğitim işi oluştur",
+    "creating": "Oluşturuluyor...",
+    "kindAndCost": "Tür: {kind} | Tahmini maliyet: ${cost}",
+    "metrics": "Metrikler: {metrics}",
+    "modelVersionsTitle": "Model sürümleri",
+    "modelVersionsCopy": "Platformun model kayıt defteri tarafından kaydedilen eğitilmiş yapılar.",
+    "refresh": "Yenile",
+    "noModelVersions": "Henüz model sürümü yok.",
+    "noArtifact": "yapıt yok",
+    "modelVersionSummary": "{name} ({kind}) - {status} - {artifact}"
+  },
+  "modelCatalog": {
+    "sectionsAriaLabel": "Model kataloğu bölümleri",
+    "tabProviders": "Sağlayıcılar",
+    "tabRoutes": "Rotalar",
+    "tabLocalOllama": "Yerel Ollama",
+    "tabPrices": "Fiyatlar",
+    "tabHealth": "Sağlık",
+    "summaryAriaLabel": "Katalog özeti",
+    "eyebrow": "Faz 1.2 katalog dilimi",
+    "summaryTitle": "Sağlayıcı karşılaştırması ve rota hazırlığı",
+    "summaryCopy": "Arayüz, mevcut olduğunda platform katalog sözleşmelerini okur, ardından arka uç uç noktaları gelmeden önce sayfanın kullanışlı kalması için tohumlanmış sağlayıcı referansına geri döner.",
+    "refreshCatalog": "Kataloğu yenile",
+    "refreshing": "Yenileniyor...",
+    "providerCards": "Sağlayıcı kartları",
+    "providerCardsDetail": "{platform} platform satırı, {fallback} yedek referans",
+    "enabledProviders": "Etkin sağlayıcılar",
+    "enabledProvidersDetail": "Etkin bayrağı, sağlayıcı veya rota API'si tarafından döndürüldüğünde gösterilir.",
+    "routes": "Rotalar",
+    "routesLoadedDetail": "Model rotalarından veya katalog yükünden yüklendi.",
+    "routesFallbackDetail": "Rota yedeği platform API'sini bekliyor.",
+    "selectedRoute": "Seçili rota",
+    "providersTitle": "Sağlayıcılar",
+    "providersCopy": "Sağlayıcı başına kullanım durumu, ödünleşim, maliyet, gizlilik, kilitlenme, anahtar modu ve yetenekler.",
+    "enabled": "etkin",
+    "reference": "referans",
+    "disabled": "devre dışı",
+    "advantage": "Avantaj",
+    "disadvantage": "Dezavantaj",
+    "cost": "Maliyet",
+    "privacy": "Gizlilik",
+    "lockIn": "Kilitlenme",
+    "keyMode": "Anahtar modu",
+    "baseUrl": "Temel URL: {url}",
+    "baseUrlLabel": "Temel URL",
+    "routesTitle": "Rotalar",
+    "routesCopy": "Rota seçici, Oluşturucu ve Deneme Alanı durum görünümleriyle paylaşılır.",
+    "activeRoute": "Etkin rota",
+    "noRoutesTitle": "Rota yüklenmedi",
+    "default": "varsayılan",
+    "provider": "Sağlayıcı",
+    "model": "Model",
+    "type": "Tür",
+    "chat": "sohbet",
+    "priority": "Öncelik",
+    "localOllamaTitle": "Yerel Ollama",
+    "localOllamaCopy": "Özel arka uç durum uç noktası eksik olsa bile yerel rota kullanılabilirliği açıkça belirtilir.",
+    "ollamaRuntime": "Ollama çalışma zamanı",
+    "endpoint": "Uç nokta",
+    "installedModels": "Kurulu modeller",
+    "pricesTitle": "Fiyatlar",
+    "pricesCopy": "Kesin fiyatlar platform anlık görüntülerinden gelir. Bu uç nokta beklemedeyken niteliksel maliyet gösterilir.",
+    "priceProvider": "Sağlayıcı",
+    "priceModel": "Model",
+    "inputPerMillion": "Giriş / 1M",
+    "outputPerMillion": "Çıkış / 1M",
+    "request": "İstek",
+    "captured": "Yakalandı",
+    "healthTitle": "Sağlık",
+    "healthCopy": "Uç nokta durumu, yedek katalog görüntülemeden ayrılır, böylece eksik API'ler görünür ancak engelleyici değildir.",
+    "platformApi": "Platform API",
+    "aiService": "Yapay zeka servisi"
+  },
+  "deployments": {
+    "localApiTitle": "Yerel API",
+    "localApiCopy": "İsteğe bağlı API anahtarı başlık yer tutucusu olan çağrı parçacığı.",
+    "keyStaged": "anahtar hazırlandı",
+    "keyOptional": "anahtar isteğe bağlı",
+    "apiKey": "API anahtarı",
+    "bootstrapKeyLoaded": "İlk kurulum anahtarı yüklendi",
+    "pasteLocalKey": "Yerel anahtar yer tutucusunu yapıştırın",
+    "headerMode": "Başlık modu",
+    "bearer": "Bearer",
+    "sampleQuestion": "Bu belge iadeler hakkında ne diyor?",
+    "apiKeyMessageFallback": "Yerel ilk kurulum anahtarı yer tutucusunu oluşturmak veya onaylamak için ilk kurulumu çalıştırın.",
+    "widgetConfigTitle": "Widget yapılandırması",
+    "widgetConfigCopy": "Gelecekteki barındırılan widget sözleşmeleri için yerel gömme yer tutucu değerleri.",
+    "placeholder": "yer tutucu",
+    "origin": "Köken",
+    "title": "Başlık",
+    "mode": "Mod",
+    "embedded": "Gömülü",
+    "floating": "Yüzen",
+    "theme": "Tema",
+    "system": "Sistem",
+    "light": "Açık",
+    "dark": "Koyu",
+    "widgetFooter": "İzin verilen köken listesi ve hız sınırı politikası yer tutucuları, barındırılan widget etkinleştirilmeden önce gereklidir."
+  },
+  "settings": {
+    "devControlsTitle": "Geliştirici kontrolleri",
+    "devControlsCopy": "Yerel tohumlama/sıfırlama kontrolleri, yeni rotalar gerektirmeden arka uç kullanılabilirliğini raporlar.",
+    "seed": "Tohumla",
+    "seeding": "Tohumlanıyor...",
+    "reset": "Sıfırla",
+    "resetting": "Sıfırlanıyor...",
+    "workspace": "Çalışma alanı",
+    "notBootstrapped": "ilk kurulum yapılmadı",
+    "workspaceDetail": "Yerel ilk kurulum çalışma alanı",
+    "apiKey": "API anahtarı",
+    "shownOnce": "bir kez gösterildi",
+    "notReturned": "döndürülmedi",
+    "apiKeyMessageFallback": "İlk kurulum anahtarı durumu, ilk kurulumdan sonra görünür.",
+    "widgetPlaceholderTitle": "Widget yer tutucusu",
+    "agent": "Aracı",
+    "mode": "Mod",
+    "theme": "Tema"
+  },
+  "evals": {
+    "evalRunsTitle": "Değerlendirme çalıştırmaları",
+    "evalRunsCopy": "Herhangi bir yükseltmeden önce yapılandırılan eşiklere göre puanlanan çalıştırmalar.",
+    "refresh": "Yenile",
+    "noEvalRuns": "Henüz değerlendirme çalıştırması yok.",
+    "passed": "GEÇTİ",
+    "failed": "BAŞARISIZ",
+    "evalRunSummary": "{status} - puan {score} / eşik {threshold} - {outcome}",
+    "evalGatesTitle": "Değerlendirme kapıları",
+    "evalGatesCopy": "Değerlendirme kapıları, yapılandırılmış eşikler karşılanana kadar yükseltmeyi engeller.",
+    "gateExactMatch": "Tam eşleşme / içerme kontrolleri",
+    "gateCitation": "Kaynak varlığı",
+    "gateLatency": "Gecikme eşiği",
+    "gateCost": "Maliyet eşiği",
+    "gateSafety": "Güvenlik kontrolleri"
+  },
+  "wallet": {
+    "chargingCopy": "Faz 1.2 boyunca faturalandırma salt okunurdur; ücretlendirme sözleşmeleri sonraki bir dilimle gelir.",
+    "chargingDisabled": "Faz 1.2'de ücretlendirme devre dışıdır.",
+    "walletId": "Cüzdan kimliği: {id}",
+    "walletIdFallback": "Yerel cüzdan yer tutucusunu oluşturmak için ilk kurulumu çalıştırın.",
+    "latestRunCost": "Son tahmini çalıştırma maliyeti: ${cost}",
+    "paymentPlaceholder": "Sağlayıcı ve Türk ödeme yöntemleri yalnızca yapılandırma yer tutucularıdır.",
+    "readOnlyTitle": "Salt okunur yer tutucu",
+    "readOnlyCopy": "Bu fazda hiçbir ödeme alımı, kredi, rezervasyon veya gerçek sağlayıcı ücretlendirmesi yürütülmez.",
+    "noCharging": "Ücretlendirme yok"
+  },
+  "builder": {
+    "documentQaTitle": "Belge QA aracısı",
+    "documentQaCopy": "Oluşturucu rota seçimi, kaydedilen demo aracı sözleşmesi değiştirilmeden görüntülenir.",
+    "builderRoute": "Oluşturucu rotası",
+    "agentId": "Aracı kimliği: {id}",
+    "agentIdFallback": "Yerel aracıyı oluşturmak için ilk kurulumu çalıştırın.",
+    "datasetId": "Veri kümesi kimliği: {id}",
+    "datasetIdFallback": "Veri kümesi yüklenmedi.",
+    "knowledgeBase": "Bilgi tabanı: {id}",
+    "knowledgeBaseFallback": "Bilgi tabanı yüklenmedi.",
+    "selectedRoute": "Seçili rota: {route}",
+    "retrieval": "Getirme: deterministik yerel hash gömmeleriyle pgvector top-k.",
+    "answerMode": "Yanıt modu: etkin olduğunda Ollama, aksi takdirde kaynaklı çıkarımsal yedek.",
+    "routeStatusTitle": "Rota durumu",
+    "routeStatusCopy": "Bu yapılandırıcıyı destekleyen sağlayıcı, rota, model ve yerel sağlık durumu.",
+    "trainingLabTitle": "Eğitim laboratuvarı mevcut",
+    "trainingLabCopy": "Sınıflandırıcılar ve regresörler, Eğitim Laboratuvarında CSV veri kümelerinden eğitilebilir.",
+    "trainingActive": "Eğitim etkin"
+  },
+  "chat": {
+    "noAnswer": "Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.",
+    "citationLabel": "Kaynak"
+  },
+  "sections": {
+    "overview": {
+      "eyebrow": "AgentPort / Faz 1.2",
+      "title": "Operatör genel bakışı",
+      "summary": "Yerel belge-QA işlemleri, geliştirici kurulumu, RAG kalite kontrolleri, iz incelemesi ve yer tutucular için kontrol yüzeyi.",
+      "status": "Faz 1.2 hazır",
+      "emptyTitle": "Canlı olay yok",
+      "emptyCopy": "İz, değerlendirme, dağıtım ve faturalandırma olayları, servis sözleşmeleri bağlandıktan sonra burada görünecek.",
+      "primaryItems": [],
+      "secondaryItems": []
+    },
+    "stack-chooser": {
+      "eyebrow": "Tasarım",
+      "title": "Yığın seçici",
+      "summary": "Bir aracı çalışma alanı için gruplandırılmış sağlayıcı, çalışma zamanı, depolama, vektör, değerlendirme ve dağıtım seçimleri.",
+      "status": "Katalog yer tutucusu",
+      "emptyTitle": "Kaydedilmiş yığın şablonu yok",
+      "emptyCopy": "Şablonlar, platform API'si çalışma alanı yığın seçimlerini kalıcı hale getirebildiğinde listelenecek.",
+      "primaryItems": [
+        "Sağlayıcı ailesi seçimi",
+        "Çalışma zamanı ve düzenleme seçenekleri",
+        "Depolama, vektör ve telemetri seçimleri",
+        "Dağıtım hedef profili"
+      ],
+      "secondaryItems": [
+        "Sağlayıcı katalog API'si gerekir",
+        "Uyumluluk kuralları gerekir",
+        "Kaydedilmiş yığın şablonu sözleşmesi gerekir"
+      ]
+    },
+    "builder": {
+      "eyebrow": "Oluştur",
+      "title": "Aracı oluşturucu",
+      "summary": "Yerel rota, veri kümesi ve bilgi tabanına bağlı belge-QA aracı yapılandırması.",
+      "status": "Belge QA hazır",
+      "emptyTitle": "Taslak aracı seçilmedi",
+      "emptyCopy": "Taslak özetleri, oluşturucu kaydetme sözleşmesi kullanılabilir olduktan sonra burada görünecek.",
+      "primaryItems": [
+        "Kimlik ve amaç bloğu",
+        "Araçlar ve izinler",
+        "Model rotası bağlama",
+        "Veri kümesi ve değerlendirme bağlantıları"
+      ],
+      "secondaryItems": [
+        "Aracı tanım şeması gerekir",
+        "Doğrulama uç noktası gerekir",
+        "Taslak kaydetme ve yayınlama eylemleri gerekir"
+      ]
+    },
+    "model-catalog": {
+      "eyebrow": "Modeller",
+      "title": "Model kataloğu",
+      "summary": "Sağlayıcı karşılaştırması, rota durumu, yerel Ollama hazırlığı, fiyat anlık görüntüleri ve uç nokta sağlığı.",
+      "status": "Katalog arayüzü hazır",
+      "emptyTitle": "Katalog yedeği etkin",
+      "emptyCopy": "Katalog uç noktaları kullanılamasa bile sağlayıcı referans kartları gösterilir.",
+      "primaryItems": [
+        "Ödünleşimli sağlayıcı kartları",
+        "Rota seçici ve durum",
+        "Yerel Ollama hazırlığı",
+        "Fiyat ve sağlık bölümleri"
+      ],
+      "secondaryItems": [
+        "Sağlayıcı uç noktası yedek kartların yerini alabilir",
+        "Fiyat anlık görüntüleri niteliksel maliyetlerin yerini alabilir",
+        "Yerel model durum uç noktası çıkarılan hazırlığın yerini alabilir"
+      ]
+    },
+    "playground": {
+      "eyebrow": "Test",
+      "title": "Deneme alanı",
+      "summary": "Yükseltmeden önce yerel belge-QA davranışını doğrulamak için istem ve RAG kalite test yüzeyi.",
+      "status": "RAG kontrolleri hazır",
+      "emptyTitle": "Yüklenmiş deneme alanı çalıştırması yok",
+      "emptyCopy": "Çalıştırmalar, yapay zeka servisi çağrı yolu kullanılabilir olduktan sonra görünecek.",
+      "primaryItems": [
+        "İstem girişi",
+        "Model rotası seçici",
+        "Araç çağrısı önizlemesi",
+        "Yanıt ve jeton özeti"
+      ],
+      "secondaryItems": [
+        "Çağrı uç noktası gerekir",
+        "Akış yanıt adaptörü gerekir",
+        "İz yakalama bağlama gerekir"
+      ]
+    },
+    "datasets": {
+      "eyebrow": "Veri",
+      "title": "Veri kümeleri",
+      "summary": "Belge yükleme, çıkarılan belge envanteri, silme/yeniden alma kontrolleri ve alım durumu için çalışma alanı.",
+      "status": "Belge işlemleri hazır",
+      "emptyTitle": "Kayıtlı veri kümesi yok",
+      "emptyCopy": "Veri varlıkları, içe aktarma ve katalog uç noktaları bağlandıktan sonra burada görünecek.",
+      "primaryItems": [
+        "Veri kümesi kaydı",
+        "Kaynak ve onay meta verileri",
+        "Sürüm soyağacı",
+        "Eğitim ve değerlendirme kullanımı"
+      ],
+      "secondaryItems": [
+        "Veri kümesi API'si gerekir",
+        "Yükleme ve içe aktarma işleri gerekir",
+        "Saklama politikası görünümü gerekir"
+      ]
+    },
+    "evals": {
+      "eyebrow": "Kalite",
+      "title": "Değerlendirmeler",
+      "summary": "Kabul kapıları, regresyon kontrolleri, puanlama ve yayın hazırlığı için değerlendirme paketi listesi.",
+      "status": "Kapı yer tutucusu",
+      "emptyTitle": "Yapılandırılmış değerlendirme paketi yok",
+      "emptyCopy": "Paketler ve en son puanlar, değerlendirme sözleşmeleri kullanılabilir olduğunda görünecek.",
+      "primaryItems": [
+        "Değerlendirme paketi kaydı",
+        "Senaryo ve değerlendirme ölçütü durumu",
+        "En son puan özeti",
+        "Yükseltme kapısı sonucu"
+      ],
+      "secondaryItems": [
+        "Değerlendirme paketi sözleşmesi gerekir",
+        "Çalıştırma zamanlayıcısı gerekir",
+        "Puan kalıcılığı gerekir"
+      ]
+    },
+    "traces": {
+      "eyebrow": "Gözlemle",
+      "title": "İzler",
+      "summary": "İstemler, araçlar, model yönlendirme, kimlik, politika, maliyetler ve hatalar için operasyonel iz akışı.",
+      "status": "Çalıştırma izleri hazır",
+      "emptyTitle": "Yakalanmış iz yok",
+      "emptyCopy": "İz kayıtları, deneme alanı ve dağıtılan aracılar telemetri yaydıktan sonra görünecek.",
+      "primaryItems": [
+        "İz araması",
+        "Kimlik ve politika sütunları",
+        "Model ve araç zaman çizelgesi",
+        "Maliyet ve gecikme özeti"
+      ],
+      "secondaryItems": [
+        "İz alım şeması gerekir",
+        "Arama uç noktası gerekir",
+        "Redaksiyon politikası gerekir"
+      ]
+    },
+    "deployments": {
+      "eyebrow": "Yayın",
+      "title": "Dağıtımlar",
+      "summary": "Yerel çağrı, API anahtarı ve gömülebilir widget yapılandırma yer tutucuları.",
+      "status": "Yapılandırma yer tutucusu",
+      "emptyTitle": "Etkin dağıtım yok",
+      "emptyCopy": "Dağıtım kartları, aracılar bir hedef çalışma zamanına yükseltilebildiğinde görünecek.",
+      "primaryItems": [
+        "Ortam hedefleri",
+        "Sürüm ve yükseltme durumu",
+        "Sağlık ve geri alma sinyali",
+        "Yayın onay durumu"
+      ],
+      "secondaryItems": [
+        "Dağıtım hedefi sözleşmesi gerekir",
+        "Yayım geçmişi gerekir",
+        "Sağlık kontrolleri gerekir"
+      ]
+    },
+    "wallet": {
+      "eyebrow": "Harcama",
+      "title": "Cüzdan",
+      "summary": "Krediler, bütçeler, sağlayıcı harcama limitleri ve ön ödemeli bakiye durumu için ayrılmış operatör görünümü.",
+      "status": "Faturalandırma yer tutucusu",
+      "emptyTitle": "Cüzdan defter kaydı yok",
+      "emptyCopy": "Defter etkinliği, faturalandırma yapılandırması ve kullanım ölçümü bağlandıktan sonra görünecek.",
+      "primaryItems": [
+        "Çalışma alanı bakiyesi",
+        "Sağlayıcı harcama limitleri",
+        "Bütçe uyarıları",
+        "Kullanım rezervasyon durumu"
+      ],
+      "secondaryItems": [
+        "Cüzdan defteri sözleşmesi gerekir",
+        "Ödeme sağlayıcı anahtarları gerekir",
+        "Harcama rezervasyon politikası gerekir"
+      ]
+    },
+    "billing": {
+      "eyebrow": "Ticari",
+      "title": "Faturalandırma",
+      "summary": "Ticari kontrol yolu için plan, fatura, ödeme, vergi ve kullanım ölçümü yer tutucusu.",
+      "status": "Yapılandırma yer tutucusu",
+      "emptyTitle": "Bağlı faturalandırma hesabı yok",
+      "emptyCopy": "Faturalandırma kayıtları, ödeme sağlayıcı yapılandırması tamamlandıktan sonra görünecek.",
+      "primaryItems": [
+        "Plan ve abonelik durumu",
+        "Faturalar ve ödeme durumu",
+        "Kullanım ölçüm pencereleri",
+        "Vergi ve makbuz profili"
+      ],
+      "secondaryItems": [
+        "Faturalandırma sağlayıcı yapılandırması gerekir",
+        "Fatura webhook işleme gerekir",
+        "Ölçüm mutabakatı gerekir"
+      ]
+    },
+    "training": {
+      "eyebrow": "Eğit",
+      "title": "Eğitim Laboratuvarı",
+      "summary": "Sınıflandırıcılar ve regresörler için eğitim işleri oluşturun, ilerlemeyi izleyin ve model sürümlerini kaydedin.",
+      "status": "CPU eğitimi hazır",
+      "emptyTitle": "Henüz eğitim işi yok",
+      "emptyCopy": "Eğitim işleri, bir veri kümesi oluşturup bir sınıflandırıcı eğitim işi başlattıktan sonra görünecek.",
+      "primaryItems": [
+        "Eğitim işi kaydı",
+        "CSV sınıflandırıcı/regresyon eğiticisi",
+        "İş günlükleri, metrikler ve yapıtlar",
+        "Model sürümü kaydı"
+      ],
+      "secondaryItems": [
+        "LoRA/ince ayar için GPU eğitimi gerekir",
+        "Deney izleme entegrasyonu gerekir",
+        "İşlerden önce cüzdan rezervasyonu gerekir"
+      ]
+    },
+    "settings": {
+      "eyebrow": "Yönetici",
+      "title": "Ayarlar",
+      "summary": "Geliştirici kontrolleri, kimlik, politika, anahtarlar, saklama ve ortam ayarları için çalışma alanı yönetim yer tutucusu.",
+      "status": "Geliştirici kontrolleri hazır",
+      "emptyTitle": "Yüklenmiş ayar yok",
+      "emptyCopy": "Çalışma alanı ayarları, kimlik ve politika API'leri bağlandıktan sonra görünecek.",
+      "primaryItems": [
+        "Çalışma alanı kimliği",
+        "Politika ve izin yuvaları",
+        "Sağlayıcı anahtar referansları",
+        "Saklama ve denetim ayarları"
+      ],
+      "secondaryItems": [
+        "Kimlik sözleşmesi gerekir",
+        "Politika uygulama API'si gerekir",
+        "Gizli anahtar referans görünümü gerekir"
+      ]
+    }
+  },
+  "readiness": {
+    "platformApi": {
+      "label": "Platform API",
+      "state": "Proxy bağlandı",
+      "detail": "/api/platform altındaki web istekleri yerel platform servisine yönlendirilir."
+    },
+    "aiService": {
+      "label": "Yapay zeka servisi",
+      "state": "Proxy bağlandı",
+      "detail": "/api/ai altındaki web istekleri yerel yapay zeka servisine yönlendirilir."
+    },
+    "bootstrap": {
+      "label": "İlk kurulum",
+      "state": "Mevcut",
+      "detail": "Yerel çalışma alanını, projeyi, rotayı, veri kümesini, bilgi tabanını, aracıyı, cüzdanı ve API anahtarını oluşturur."
+    },
+    "devSeedReset": {
+      "label": "Geliştirici tohumlama/sıfırlama",
+      "state": "Savunmacı arayüz",
+      "detail": "Tohumlama yerel ilk kuruluma geri döner; sıfırlama, geliştirici uç noktası eksik olduğunda arka uç kullanılabilirliğini raporlar."
+    },
+    "modelRoute": {
+      "label": "Model rotası",
+      "state": "Yerel varsayılan",
+      "detail": "Ollama varsayılan rota olarak tohumlanır, hiçbir model erişilebilir olmadığında çıkarımsal yedek devreye girer."
+    },
+    "agentDefinition": {
+      "label": "Aracı tanımı",
+      "state": "Oluşturuldu",
+      "detail": "İlk kurulum akışı, varsayılan bilgi tabanına bağlı bir belge-QA aracısı oluşturur."
+    },
+    "billingPlaceholders": {
+      "label": "Faturalandırma yapılandırma yer tutucuları",
+      "state": "Yer tutucu",
+      "detail": "Cüzdan ve faturalandırma görünümleri plan, cüzdan ve ödeme ayarlarını ayırır."
+    },
+    "docsExamples": {
+      "label": "Belgeler ve örnekler",
+      "state": "Örnek hazır",
+      "detail": "Belge-QA akışını duman testi için bir destek politikası örnek belgesi mevcuttur."
+    },
+    "ragQuality": {
+      "label": "RAG kalite kontrolleri",
+      "state": "İstemci etkin",
+      "detail": "İlk K, puan eşiği ve yanıt-yok görünürlüğü deneme alanında sunulur."
+    }
+  },
+  "overviewMetrics": {
+    "workspaceMode": {
+      "label": "Çalışma alanı modu",
+      "value": "Operatör kabuğu",
+      "detail": "Belge yükleme, RAG sohbeti, eğitim, değerlendirmeler, izler ve parçacıklar yerel olarak mevcuttur."
+    },
+    "serviceProxies": {
+      "label": "Servis proxy'leri",
+      "value": "2 yapılandırıldı",
+      "detail": "/api/platform ve /api/ai, Next yeniden yazmaları tarafından yönlendirilir."
+    },
+    "launchScope": {
+      "label": "Lansman kapsamı",
+      "value": "Faz 1.2",
+      "detail": "Belge-QA işlemleri, model kataloğu arayüzü, rota durumu, savunmacı geliştirici kontrolleri ve iz cilası."
+    },
+    "billingState": {
+      "label": "Faturalandırma durumu",
+      "value": "Yer tutucular",
+      "detail": "Cüzdan ve faturalandırma yolları ödeme yürütmesi olmadan mevcuttur."
+    }
+  },
+  "setupQueue": {
+    "runOnboarding": {
+      "label": "İlk kurulumu çalıştır",
+      "detail": "Yerel çalışma alanını, rotayı, veri kümesini, bilgi tabanını, aracıyı, cüzdanı ve API anahtarını oluşturun veya onaylayın."
+    },
+    "uploadDocuments": {
+      "label": "Belge yükle",
+      "detail": ".txt, .md veya .pdf belgeleri ekleyin ve alım işlerinden çıkarılan belge varlıklarını izleyin."
+    },
+    "askPlayground": {
+      "label": "Deneme alanında sor",
+      "detail": "Yerel olarak kaynaklı çıkarımsal RAG kullanın veya etkin ve erişilebilir olduğunda Ollama kullanın."
+    },
+    "reviewTraces": {
+      "label": "İzleri incele",
+      "detail": "Yanıtı, getirilen parçaları, kaynakları, çalıştırma kimliğini, iz kimliğini, gecikmeyi, maliyeti ve iz meta verilerini kontrol edin."
+    },
+    "trainClassifier": {
+      "label": "Bir sınıflandırıcı eğit",
+      "detail": "Bir CSV veri kümesi yükleyin ve Eğitim Laboratuvarından bir scikit-learn sınıflandırıcısı eğitin."
+    },
+    "registerModel": {
+      "label": "Model sürümü kaydet",
+      "detail": "Eğitilmiş yapıtları aday/hazırlık/üretim takma adlarıyla model kaydına kaydedin."
+    }
+  }
+}

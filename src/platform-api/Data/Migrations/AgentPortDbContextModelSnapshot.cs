@@ -899,7 +899,7 @@ namespace AgentPort.PlatformApi.Data.Migrations
 
                     b.Property<string>("Embedding")
                         .IsRequired()
-                        .HasColumnType("vector(64)");
+                        .HasColumnType("vector(768)");
 
                     b.Property<DateTime?>("InactiveAt")
                         .HasColumnType("timestamp with time zone");

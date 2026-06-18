@@ -1,14 +1,14 @@
-# AgentPort Launch: DefterPort Wedge
+# AgentPort Launch: AgentPort Wedge
 
 **Strategy:** Narrow & Launch — one vertical, one workflow, one price band.
 
-AgentPort ships as the self-hostable control plane. **DefterPort** is the first commercial wedge: on-prem document QA for Turkish accounting firms (SMMM offices) that need KVKK-compliant answers over tax law and client files.
+AgentPort ships as the self-hostable control plane. **AgentPort** is the first commercial wedge: on-prem document QA for Turkish accounting firms (SMMM offices) that need KVKK-compliant answers over tax law and client files.
 
 ## Wedge Summary
 
 | Dimension | Choice |
 |-----------|--------|
-| **Product name** | DefterPort (powered by AgentPort) |
+| **Product name** | AgentPort (powered by AgentPort) |
 | **ICP** | SMMM firms, 3–15 staff, 50–500 active clients |
 | **Buyer** | Office owner / lead müşavir |
 | **Champion** | Senior accountant who answers the same GİB / KDV / stopaj questions daily |
@@ -49,7 +49,7 @@ AgentPort ships as the self-hostable control plane. **DefterPort** is the first 
 ```text
 Public SaaS chat  →  client data leaves the office, KVKK risk
 Generic RAG SaaS  →  no Turkish tax law pack, no SMMM workflow
-DefterPort        →  on-prem RAG, Turkish tax doc pack, client folder ingestion, cited answers
+AgentPort        →  on-prem RAG, Turkish tax doc pack, client folder ingestion, cited answers
 AgentPort Govern  →  control plane: traces, API keys, workspace isolation, retention policy
 ```
 
@@ -63,14 +63,14 @@ All prices TRY, billed monthly. Annual prepay: 2 months free.
 
 | Tier | Price | Includes |
 |------|-------|----------|
-| **DefterPort Starter** | ₺3,500 / mo | 1 workspace, 1 knowledge base, Turkish tax law seed pack, 3 users, 10 GB indexed docs, email support |
-| **DefterPort Office** | ₺6,000 / mo | 3 workspaces (e.g. KDV / SGK / özel mükellef), 5 users, 50 GB, client folder watch path, priority setup |
+| **AgentPort Starter** | ₺3,500 / mo | 1 workspace, 1 knowledge base, Turkish tax law seed pack, 3 users, 10 GB indexed docs, email support |
+| **AgentPort Office** | ₺6,000 / mo | 3 workspaces (e.g. KDV / SGK / özel mükellef), 5 users, 50 GB, client folder watch path, priority setup |
 | **AgentPort Govern add-on** | +₺1,500 / mo | Extended trace retention (90d), exportable audit log, API key scopes, domain allowlist for internal widget |
 
 ### What's included in setup (one-time, bundled in month 1)
 
 - Docker Compose or single-node install on firm hardware
-- Turkish tax law seed doc ingestion (`examples/defterport/seed-docs/`)
+- Turkish tax law seed doc ingestion (`examples/agentport/seed-docs/`)
 - One client folder ingestion path (Office tier: up to 3 paths)
 - 2-hour remote onboarding with lead müşavir
 
@@ -83,7 +83,7 @@ All prices TRY, billed monthly. Annual prepay: 2 months free.
 
 ## AgentPort Govern SKU
 
-**Govern** is the compliance and operations layer sold with DefterPort. It maps to existing AgentPort primitives:
+**Govern** is the compliance and operations layer sold with AgentPort. It maps to existing AgentPort primitives:
 
 | Govern capability | AgentPort primitive |
 |-------------------|---------------------|
@@ -105,10 +105,10 @@ Goal: a paying SMMM pilot can ingest tax law + one client folder, ask Turkish qu
 
 | Day | Deliverable | Repo / surface |
 |-----|-------------|----------------|
-| 1–2 | DefterPort seed doc pack structure + sample ingestion | `examples/defterport/seed-docs/` |
-| 2–3 | Bootstrap script: DefterPort workspace, agent, dataset | `scripts/` or `examples/defterport/bootstrap.json` |
+| 1–2 | AgentPort seed doc pack structure + sample ingestion | `examples/agentport/seed-docs/` |
+| 2–3 | Bootstrap script: AgentPort workspace, agent, dataset | `scripts/` or `examples/agentport/bootstrap.json` |
 | 3–4 | Turkish QA smoke: 10 fixed mevzuat questions with citation assertions | `scripts/smoke.sh` extension |
-| 4–5 | Client folder ingestion docs (watch folder → dataset) | `docs/products/DEFTERPORT.md` |
+| 4–5 | Client folder ingestion docs (watch folder → dataset) | `docs/products/AGENTPORT.md` |
 | 5 | Internal demo on Docker Compose stack | `docker-compose.yml` + `scripts/dev-up.sh` |
 
 ### Week 2 — Pilot-ready
@@ -116,7 +116,7 @@ Goal: a paying SMMM pilot can ingest tax law + one client folder, ask Turkish qu
 | Day | Deliverable | Repo / surface |
 |-----|-------------|----------------|
 | 6–7 | "No answer" behavior for out-of-corpus questions (already in AI services) | `src/ai-services/` |
-| 7–8 | Operator quickstart page for DefterPort (TR) | `docs/products/DEFTERPORT.md` |
+| 7–8 | Operator quickstart page for AgentPort (TR) | `docs/products/AGENTPORT.md` |
 | 8–9 | Govern: trace export JSON + 90d retention documented | `docs/LAUNCH.md` + existing trace endpoints |
 | 9–10 | Install runbook: single-node Linux, backup/restore | `infra/backups/`, `docs/quickstart.md` link |
 | 10 | Pilot LOI template + pricing one-pager | sales collateral (out of repo) |
@@ -150,14 +150,14 @@ Goal: a paying SMMM pilot can ingest tax law + one client folder, ask Turkish qu
 
 ## Technical baseline (existing stack)
 
-DefterPort MVP reuses the current AgentPort path without new microservices:
+AgentPort MVP reuses the current AgentPort path without new microservices:
 
 ```text
 docker-compose.yml     PostgreSQL + pgvector, Redis, RabbitMQ, MinIO
 src/platform-api/      Workspace, dataset, agent, chat, trace APIs
 src/ai-services/       Ingest, embed, retrieve, cited extractive answers
 src/web/               Operator dashboard (playground, traces, datasets)
-examples/defterport/   Seed docs + bootstrap fixtures
+examples/agentport/   Seed docs + bootstrap fixtures
 ```
 
 Local bring-up:
@@ -168,10 +168,10 @@ RESET_JSON="$(scripts/dev-reset.sh)"
 scripts/smoke.sh
 ```
 
-See `docs/products/DEFTERPORT.md` for the full DefterPort product specification.
+See `docs/products/AGENTPORT.md` for the full AgentPort product specification.
 
 ## Repository
 
 Existing repo: [github.com/UmutKorkmaz/agent-port](https://github.com/UmutKorkmaz/agent-port)
 
-Do not fork to a new product repo for MVP. DefterPort ships as `docs/`, `examples/defterport/`, and pilot scripts inside AgentPort.
+Do not fork to a new product repo for MVP. AgentPort ships as `docs/`, `examples/agentport/`, and pilot scripts inside AgentPort.

@@ -1,0 +1,710 @@
+{
+  "nav": {
+    "brandName": "AgentPort",
+    "brandMeta": "Phase 1.2 operator console",
+    "ariaLabel": "Operator navigation",
+    "toggleLabel": "Toggle navigation",
+    "toggleOpen": "Open navigation menu",
+    "toggleClose": "Close navigation menu",
+    "drawerLabel": "Operator navigation drawer",
+    "overview": "Overview",
+    "stack-chooser": "Stack Chooser",
+    "builder": "Builder",
+    "model-catalog": "Model Catalog",
+    "playground": "Playground",
+    "datasets": "Datasets",
+    "training": "Training",
+    "evals": "Evals",
+    "traces": "Traces",
+    "deployments": "Deployments",
+    "wallet": "Wallet",
+    "billing": "Billing",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "refresh": "Refresh",
+    "loading": "Loading",
+    "retry": "Retry",
+    "close": "Close",
+    "none": "none",
+    "notReported": "not reported",
+    "notLoaded": "not loaded",
+    "notSelected": "not selected",
+    "unknown": "unknown",
+    "placeholder": "placeholder"
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "tr": "Turkish"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "shell": {
+    "workspaceStatus": "Workspace status",
+    "environment": "Environment",
+    "environmentValue": "Local integrated workspace",
+    "phase": "Phase",
+    "phaseValue": "Phase 1.2",
+    "viewStatus": "View status"
+  },
+  "sectionView": {
+    "operatorSurface": "Operator surface",
+    "operatorSurfaceCopy": "Primary controls surfaced for this section of the operator console.",
+    "integrationQueue": "Integration queue",
+    "integrationQueueCopy": "Contracts the platform API still needs to wire this section to live data.",
+    "serviceLinks": "Service links",
+    "serviceLinksCopy": "Direct health endpoints for the backing services.",
+    "platformApiStatus": "Platform API status",
+    "aiServiceHealth": "AI service health",
+    "currentState": "{title} current state"
+  },
+  "routeStatus": {
+    "selectedRoute": "Selected route",
+    "provider": "Provider",
+    "route": "Route",
+    "model": "Model",
+    "localHealth": "Local health",
+    "noRouteSelected": "No route selected",
+    "noRoutesLoaded": "No routes loaded"
+  },
+  "overview": {
+    "firstRunTitle": "First run",
+    "firstRunCopy": "Bring the local workspace, dataset, knowledge base, model route, and document-QA agent online.",
+    "runOnboarding": "Run onboarding",
+    "creating": "Creating...",
+    "seed": "Seed",
+    "seeding": "Seeding...",
+    "reset": "Reset",
+    "resetting": "Resetting...",
+    "platformApi": "Platform API",
+    "aiService": "AI service",
+    "workspace": "Workspace",
+    "runOnboardingDetail": "Run onboarding",
+    "dataset": "Dataset",
+    "docsChunks": "{documents} docs, {chunks} chunks",
+    "noDatasetLoaded": "No dataset loaded",
+    "localFlowTitle": "Local flow",
+    "localFlowCopy": "Phase 1.2 focuses on document-QA operations, model catalog visibility, route status, trace review, and configuration placeholders.",
+    "workspaceSnapshotTitle": "Workspace snapshot",
+    "workspaceSnapshotCopy": "Live identifiers from bootstrap are shown after onboarding.",
+    "agentLabel": "Agent",
+    "agentDetail": "Document-QA agent definition",
+    "knowledgeBaseLabel": "Knowledge base",
+    "knowledgeBaseDetail": "pgvector-backed local store",
+    "readinessTitle": "Readiness checklist",
+    "readinessCopy": "Phase 1 status and remaining placeholders."
+  },
+  "datasets": {
+    "documentSourcesTitle": "Document sources",
+    "documentSourcesCopy": "Upload, inspect ingestion status, and manage document assets when backend controls are present.",
+    "refresh": "Refresh",
+    "ingesting": "Ingesting...",
+    "uploadDocument": "Upload document",
+    "noDocumentsTitle": "No documents loaded",
+    "noDocumentsCopy": "Upload a document or refresh after a backend document list endpoint is added.",
+    "noDocumentsAction": "Upload a document",
+    "noDocumentsWatermark": "AgentPort knowledge base",
+    "document": "document",
+    "chunksAndId": "{chunks} chunks - {id}",
+    "updated": "Updated {date}",
+    "reingest": "Reingest",
+    "reingesting": "Reingesting...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "datasetsTitle": "Datasets",
+    "datasetSummary": "{documents} documents, {chunks} chunks",
+    "ingestionJobsTitle": "Ingestion jobs",
+    "noIngestionJobs": "No ingestion jobs yet.",
+    "jobSummary": "{status} - {chunks} chunks - document {documentId} - {date}"
+  },
+  "playground": {
+    "askTitle": "Ask the document agent",
+    "askCopy": "Tune retrieval depth and answer visibility before asking the local document-QA agent.",
+    "belowThreshold": "below threshold",
+    "qualityPass": "quality pass",
+    "notRun": "not run",
+    "topK": "Top K",
+    "scoreThreshold": "Score threshold",
+    "modelRoute": "Model route",
+    "apiKey": "API key",
+    "bootstrapKeyLoaded": "Bootstrap key loaded",
+    "pasteLocalApiKey": "Paste local API key",
+    "showNoAnswer": "Show no-answer below threshold",
+    "ask": "Ask",
+    "asking": "Asking...",
+    "answerLabel": "Answer",
+    "routeLabel": "Route: {route}",
+    "bestScore": "Best score: {score}",
+    "visibleChunks": "Visible chunks: {visible}/{total}",
+    "run": "Run: {value}",
+    "trace": "Trace: {value}",
+    "latency": "Latency: {value}",
+    "latencyMs": "{ms} ms",
+    "pendingRefresh": "pending refresh",
+    "costEstimate": "Cost estimate: {value}",
+    "loadTrace": "Load trace",
+    "notCaptured": "not captured",
+    "routeStatusTitle": "Route status",
+    "routeStatusCopy": "Provider, route, model, and local health for the currently selected route.",
+    "citationsTitle": "Citations and chunks",
+    "citationsCopy": "Client-side thresholding controls what counts as answerable evidence.",
+    "citationFallback": "citation",
+    "unknownFile": "unknown file",
+    "noChunksTitle": "No chunks above threshold",
+    "noChunksCopy": "Lower the score threshold or increase Top K to inspect more evidence.",
+    "tracePreviewTitle": "Trace preview",
+    "tracePreviewCopy": "Token usage and cost from the most recent traceable run.",
+    "trace2": "Trace",
+    "tokens": "Tokens",
+    "tokensSummary": "{input} in / {output} out",
+    "cost": "Cost"
+  },
+  "traces": {
+    "recentRunsTitle": "Recent runs",
+    "recentRunsCopy": "Playground and agent invocations with trace ids, latency, fallback mode, and citation counts.",
+    "refresh": "Refresh",
+    "noRunsTitle": "No runs captured yet",
+    "noRunsCopy": "Ask a question in the playground to create the first traceable run.",
+    "noRunsAction": "Open the playground",
+    "noRunsWatermark": "AgentPort traces",
+    "ms": "{ms} ms",
+    "citationsCount": "{count} citations",
+    "chunksCount": "{count} chunks",
+    "loadTrace": "Load trace",
+    "loading": "Loading...",
+    "traceDetailTitle": "Trace detail",
+    "traceDetailCopy": "Raw trace metadata stays collapsed into dense operational fields.",
+    "traceId": "Trace id",
+    "correlation": "Correlation",
+    "modelRoute": "Model route",
+    "tokens": "Tokens",
+    "tokensSummary": "{input} / {output}",
+    "humanReviewTitle": "Human review queue",
+    "noReviews": "No review records yet.",
+    "noLabel": "no label",
+    "unassigned": "unassigned",
+    "reviewSummary": "{queue} - {status} - {label} - reviewer {reviewer}"
+  },
+  "training": {
+    "trainingJobsTitle": "Training jobs",
+    "trainingJobsCopy": "Queue a classification or regression job against the active dataset and watch its metrics land.",
+    "jobNamePrefix": "Classifier {timestamp}",
+    "createFailed": "Failed to create training job.",
+    "targetColumn": "Target column",
+    "targetColumnPlaceholder": "e.g. label, category, price",
+    "task": "Task",
+    "classification": "Classification",
+    "regression": "Regression",
+    "createTrainingJob": "Create training job",
+    "creating": "Creating...",
+    "kindAndCost": "Kind: {kind} | Est. cost: ${cost}",
+    "metrics": "Metrics: {metrics}",
+    "modelVersionsTitle": "Model versions",
+    "modelVersionsCopy": "Trained artifacts registered by the platform's model registry.",
+    "refresh": "Refresh",
+    "noModelVersions": "No model versions yet.",
+    "noArtifact": "no artifact",
+    "modelVersionSummary": "{name} ({kind}) - {status} - {artifact}"
+  },
+  "modelCatalog": {
+    "sectionsAriaLabel": "Model catalog sections",
+    "tabProviders": "Providers",
+    "tabRoutes": "Routes",
+    "tabLocalOllama": "Local Ollama",
+    "tabPrices": "Prices",
+    "tabHealth": "Health",
+    "summaryAriaLabel": "Catalog summary",
+    "eyebrow": "Phase 1.2 catalog slice",
+    "summaryTitle": "Provider comparison and route readiness",
+    "summaryCopy": "The UI reads platform catalog contracts when available, then falls back to the seeded provider reference so the page remains useful before backend endpoints land.",
+    "refreshCatalog": "Refresh catalog",
+    "refreshing": "Refreshing...",
+    "providerCards": "Provider cards",
+    "providerCardsDetail": "{platform} platform rows, {fallback} fallback references",
+    "enabledProviders": "Enabled providers",
+    "enabledProvidersDetail": "Enabled flag is shown when returned by the provider or route API.",
+    "routes": "Routes",
+    "routesLoadedDetail": "Loaded from model-routes or catalog payload.",
+    "routesFallbackDetail": "Route fallback is waiting for the platform API.",
+    "selectedRoute": "Selected route",
+    "providersTitle": "Providers",
+    "providersCopy": "Use case, tradeoff, cost, privacy, lock-in, key mode, and capabilities per provider.",
+    "enabled": "enabled",
+    "reference": "reference",
+    "disabled": "disabled",
+    "advantage": "Advantage",
+    "disadvantage": "Disadvantage",
+    "cost": "Cost",
+    "privacy": "Privacy",
+    "lockIn": "Lock-in",
+    "keyMode": "Key mode",
+    "baseUrl": "Base URL: {url}",
+    "baseUrlLabel": "Base URL",
+    "routesTitle": "Routes",
+    "routesCopy": "Route selector is shared with Builder and Playground status displays.",
+    "activeRoute": "Active route",
+    "noRoutesTitle": "No routes loaded",
+    "default": "default",
+    "provider": "Provider",
+    "model": "Model",
+    "type": "Type",
+    "chat": "chat",
+    "priority": "Priority",
+    "localOllamaTitle": "Local Ollama",
+    "localOllamaCopy": "Local route availability is explicit even when the dedicated backend status endpoint is missing.",
+    "ollamaRuntime": "Ollama runtime",
+    "endpoint": "Endpoint",
+    "installedModels": "Installed models",
+    "pricesTitle": "Prices",
+    "pricesCopy": "Exact prices come from platform snapshots. Qualitative cost is shown while that endpoint is pending.",
+    "priceProvider": "Provider",
+    "priceModel": "Model",
+    "inputPerMillion": "Input / 1M",
+    "outputPerMillion": "Output / 1M",
+    "request": "Request",
+    "captured": "Captured",
+    "healthTitle": "Health",
+    "healthCopy": "Endpoint status is separated from fallback catalog rendering so missing APIs are visible but non-blocking.",
+    "platformApi": "Platform API",
+    "aiService": "AI service"
+  },
+  "deployments": {
+    "localApiTitle": "Local API",
+    "localApiCopy": "Invocation snippet with optional API key header placeholder.",
+    "keyStaged": "key staged",
+    "keyOptional": "key optional",
+    "apiKey": "API key",
+    "bootstrapKeyLoaded": "Bootstrap key loaded",
+    "pasteLocalKey": "Paste local key placeholder",
+    "headerMode": "Header mode",
+    "bearer": "Bearer",
+    "sampleQuestion": "What does this document say about refunds?",
+    "apiKeyMessageFallback": "Run onboarding to create or confirm the local bootstrap key placeholder.",
+    "widgetConfigTitle": "Widget config",
+    "widgetConfigCopy": "Local embed placeholder values for future hosted widget contracts.",
+    "placeholder": "placeholder",
+    "origin": "Origin",
+    "title": "Title",
+    "mode": "Mode",
+    "embedded": "Embedded",
+    "floating": "Floating",
+    "theme": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "widgetFooter": "Allowed-origin allowlist and rate-limit policy placeholders remain required before hosted widget activation."
+  },
+  "settings": {
+    "devControlsTitle": "Dev controls",
+    "devControlsCopy": "Local seed/reset controls report backend availability without requiring new routes.",
+    "seed": "Seed",
+    "seeding": "Seeding...",
+    "reset": "Reset",
+    "resetting": "Resetting...",
+    "workspace": "Workspace",
+    "notBootstrapped": "not bootstrapped",
+    "workspaceDetail": "Local bootstrap workspace",
+    "apiKey": "API key",
+    "shownOnce": "shown once",
+    "notReturned": "not returned",
+    "apiKeyMessageFallback": "Bootstrap key status appears after onboarding.",
+    "widgetPlaceholderTitle": "Widget placeholder",
+    "agent": "Agent",
+    "mode": "Mode",
+    "theme": "Theme"
+  },
+  "evals": {
+    "evalRunsTitle": "Eval runs",
+    "evalRunsCopy": "Scored runs gated against configured thresholds before any promotion.",
+    "refresh": "Refresh",
+    "noEvalRuns": "No eval runs yet.",
+    "passed": "PASSED",
+    "failed": "FAILED",
+    "evalRunSummary": "{status} - score {score} / threshold {threshold} - {outcome}",
+    "evalGatesTitle": "Eval gates",
+    "evalGatesCopy": "Eval gates block promotion until configured thresholds are met.",
+    "gateExactMatch": "Exact match / contains checks",
+    "gateCitation": "Citation presence",
+    "gateLatency": "Latency threshold",
+    "gateCost": "Cost threshold",
+    "gateSafety": "Safety checks"
+  },
+  "wallet": {
+    "chargingCopy": "Billing is read-only during Phase 1.2; charging contracts land with a later slice.",
+    "chargingDisabled": "Charging is disabled in Phase 1.2.",
+    "walletId": "Wallet id: {id}",
+    "walletIdFallback": "Run onboarding to create the local wallet placeholder.",
+    "latestRunCost": "Latest estimated run cost: ${cost}",
+    "paymentPlaceholder": "Provider and Turkish payment methods are configuration placeholders only.",
+    "readOnlyTitle": "Read-only placeholder",
+    "readOnlyCopy": "No payment capture, credits, reservations, or real provider charges are executed in this phase.",
+    "noCharging": "No charging"
+  },
+  "builder": {
+    "documentQaTitle": "Document QA agent",
+    "documentQaCopy": "Builder route selection is displayed without changing the saved demo agent contract.",
+    "builderRoute": "Builder route",
+    "agentId": "Agent id: {id}",
+    "agentIdFallback": "Run onboarding to create the local agent.",
+    "datasetId": "Dataset id: {id}",
+    "datasetIdFallback": "No dataset loaded.",
+    "knowledgeBase": "Knowledge base: {id}",
+    "knowledgeBaseFallback": "No knowledge base loaded.",
+    "selectedRoute": "Selected route: {route}",
+    "retrieval": "Retrieval: pgvector top-k with deterministic local hash embeddings.",
+    "answerMode": "Answer mode: Ollama when enabled, otherwise extractive fallback with citations.",
+    "routeStatusTitle": "Route status",
+    "routeStatusCopy": "Provider, route, model, and local health backing this builder configuration.",
+    "trainingLabTitle": "Training lab available",
+    "trainingLabCopy": "Classifiers and regressors can be trained from CSV datasets in the Training Lab.",
+    "trainingActive": "Training active"
+  },
+  "chat": {
+    "noAnswer": "No answer is shown because the best retrieved chunk is below the configured score threshold.",
+    "citationLabel": "Source"
+  },
+  "sections": {
+    "overview": {
+      "eyebrow": "AgentPort / Phase 1.2",
+      "title": "Operator overview",
+      "summary": "Control surface for local document-QA operations, dev setup, RAG quality checks, trace review, and placeholders.",
+      "status": "Phase 1.2 ready",
+      "emptyTitle": "No live incidents",
+      "emptyCopy": "Trace, eval, deployment, and billing events will appear here after service contracts are connected.",
+      "primaryItems": [],
+      "secondaryItems": []
+    },
+    "stack-chooser": {
+      "eyebrow": "Design",
+      "title": "Stack chooser",
+      "summary": "Provider, runtime, storage, vector, evaluation, and deployment choices grouped for an agent workspace.",
+      "status": "Catalog placeholder",
+      "emptyTitle": "No stack templates saved",
+      "emptyCopy": "Templates will be listed once the platform API can persist workspace stack choices.",
+      "primaryItems": [
+        "Provider family selection",
+        "Runtime and orchestration options",
+        "Storage, vector, and telemetry choices",
+        "Deployment target profile"
+      ],
+      "secondaryItems": [
+        "Needs provider catalog API",
+        "Needs compatibility rules",
+        "Needs saved stack template contract"
+      ]
+    },
+    "builder": {
+      "eyebrow": "Create",
+      "title": "Agent builder",
+      "summary": "Document-QA agent configuration linked to the local route, dataset, and knowledge base.",
+      "status": "Document QA ready",
+      "emptyTitle": "No draft agent selected",
+      "emptyCopy": "Draft summaries will appear here after the builder save contract is available.",
+      "primaryItems": [
+        "Identity and purpose block",
+        "Tools and permissions",
+        "Model route binding",
+        "Dataset and eval links"
+      ],
+      "secondaryItems": [
+        "Needs agent definition schema",
+        "Needs validation endpoint",
+        "Needs draft save and publish actions"
+      ]
+    },
+    "model-catalog": {
+      "eyebrow": "Models",
+      "title": "Model catalog",
+      "summary": "Provider comparison, route status, local Ollama readiness, price snapshots, and endpoint health.",
+      "status": "Catalog UI ready",
+      "emptyTitle": "Catalog fallback active",
+      "emptyCopy": "Provider reference cards are shown even when catalog endpoints are not available.",
+      "primaryItems": [
+        "Provider cards with tradeoffs",
+        "Route selector and status",
+        "Local Ollama readiness",
+        "Price and health sections"
+      ],
+      "secondaryItems": [
+        "Provider endpoint can replace fallback cards",
+        "Price snapshots can replace qualitative costs",
+        "Local model status endpoint can replace inferred readiness"
+      ]
+    },
+    "playground": {
+      "eyebrow": "Test",
+      "title": "Playground",
+      "summary": "Prompt and RAG quality test surface for validating local document-QA behavior before promotion.",
+      "status": "RAG controls ready",
+      "emptyTitle": "No playground run loaded",
+      "emptyCopy": "Runs will appear after the AI service invocation path is available.",
+      "primaryItems": [
+        "Prompt input",
+        "Model route selector",
+        "Tool-call preview",
+        "Response and token summary"
+      ],
+      "secondaryItems": [
+        "Needs invoke endpoint",
+        "Needs streaming response adapter",
+        "Needs trace capture binding"
+      ]
+    },
+    "datasets": {
+      "eyebrow": "Data",
+      "title": "Datasets",
+      "summary": "Workspace for document upload, inferred document inventory, delete/reingest controls, and ingestion status.",
+      "status": "Document ops ready",
+      "emptyTitle": "No datasets registered",
+      "emptyCopy": "Data assets will appear here after import and catalog endpoints are connected.",
+      "primaryItems": [
+        "Dataset registry",
+        "Source and consent metadata",
+        "Version lineage",
+        "Training and eval usage"
+      ],
+      "secondaryItems": [
+        "Needs dataset API",
+        "Needs upload and import jobs",
+        "Needs retention policy display"
+      ]
+    },
+    "evals": {
+      "eyebrow": "Quality",
+      "title": "Evals",
+      "summary": "Evaluation suite list for acceptance gates, regression checks, scoring, and release readiness.",
+      "status": "Gate placeholder",
+      "emptyTitle": "No eval suites configured",
+      "emptyCopy": "Suites and latest scores will appear once evaluation contracts are available.",
+      "primaryItems": [
+        "Eval suite registry",
+        "Scenario and rubric status",
+        "Latest score summary",
+        "Promotion gate outcome"
+      ],
+      "secondaryItems": [
+        "Needs eval suite contract",
+        "Needs run scheduler",
+        "Needs score persistence"
+      ]
+    },
+    "traces": {
+      "eyebrow": "Observe",
+      "title": "Traces",
+      "summary": "Operational trace stream for prompts, tools, model routing, identity, policy, costs, and failures.",
+      "status": "Run traces ready",
+      "emptyTitle": "No traces captured",
+      "emptyCopy": "Trace records will appear after playground and deployed agents emit telemetry.",
+      "primaryItems": [
+        "Trace search",
+        "Identity and policy columns",
+        "Model and tool timeline",
+        "Cost and latency summary"
+      ],
+      "secondaryItems": [
+        "Needs trace ingest schema",
+        "Needs search endpoint",
+        "Needs redaction policy"
+      ]
+    },
+    "deployments": {
+      "eyebrow": "Release",
+      "title": "Deployments",
+      "summary": "Local invocation, API key, and embeddable widget configuration placeholders.",
+      "status": "Config placeholder",
+      "emptyTitle": "No deployments active",
+      "emptyCopy": "Deployment cards will appear once agents can be promoted to a target runtime.",
+      "primaryItems": [
+        "Environment targets",
+        "Version and promotion state",
+        "Health and rollback signal",
+        "Release approval status"
+      ],
+      "secondaryItems": [
+        "Needs deploy target contract",
+        "Needs rollout history",
+        "Needs health checks"
+      ]
+    },
+    "wallet": {
+      "eyebrow": "Spend",
+      "title": "Wallet",
+      "summary": "Reserved operator view for credits, budgets, provider spend limits, and prepaid balance status.",
+      "status": "Billing placeholder",
+      "emptyTitle": "No wallet ledger entries",
+      "emptyCopy": "Ledger activity will appear after billing configuration and usage metering are connected.",
+      "primaryItems": [
+        "Workspace balance",
+        "Provider spend limits",
+        "Budget alerts",
+        "Usage reservation state"
+      ],
+      "secondaryItems": [
+        "Needs wallet ledger contract",
+        "Needs payment provider keys",
+        "Needs spend reservation policy"
+      ]
+    },
+    "billing": {
+      "eyebrow": "Commercial",
+      "title": "Billing",
+      "summary": "Plan, invoice, payment, tax, and usage metering placeholder for the commercial control path.",
+      "status": "Config placeholder",
+      "emptyTitle": "No billing account linked",
+      "emptyCopy": "Billing records will appear after payment provider configuration is completed.",
+      "primaryItems": [
+        "Plan and subscription state",
+        "Invoices and payment status",
+        "Usage metering windows",
+        "Tax and receipt profile"
+      ],
+      "secondaryItems": [
+        "Needs billing provider config",
+        "Needs invoice webhook handling",
+        "Needs metering reconciliation"
+      ]
+    },
+    "training": {
+      "eyebrow": "Train",
+      "title": "Training Lab",
+      "summary": "Create training jobs for classifiers and regressors, monitor progress, and register model versions.",
+      "status": "CPU training ready",
+      "emptyTitle": "No training jobs yet",
+      "emptyCopy": "Training jobs will appear after you create a dataset and start a classifier training job.",
+      "primaryItems": [
+        "Training job registry",
+        "CSV classifier/regression trainer",
+        "Job logs, metrics, and artifacts",
+        "Model version registration"
+      ],
+      "secondaryItems": [
+        "Needs GPU training for LoRA/fine-tuning",
+        "Needs experiment tracking integration",
+        "Needs wallet reservation before jobs"
+      ]
+    },
+    "settings": {
+      "eyebrow": "Admin",
+      "title": "Settings",
+      "summary": "Workspace administration placeholder for dev controls, identity, policy, keys, retention, and environment settings.",
+      "status": "Dev controls ready",
+      "emptyTitle": "No settings loaded",
+      "emptyCopy": "Workspace settings will appear after identity and policy APIs are connected.",
+      "primaryItems": [
+        "Workspace identity",
+        "Policy and permission slots",
+        "Provider key references",
+        "Retention and audit settings"
+      ],
+      "secondaryItems": [
+        "Needs identity contract",
+        "Needs policy enforcement API",
+        "Needs secret reference display"
+      ]
+    }
+  },
+  "readiness": {
+    "platformApi": {
+      "label": "Platform API",
+      "state": "Proxy wired",
+      "detail": "Web requests under /api/platform route to the local platform service."
+    },
+    "aiService": {
+      "label": "AI service",
+      "state": "Proxy wired",
+      "detail": "Web requests under /api/ai route to the local AI service."
+    },
+    "bootstrap": {
+      "label": "Bootstrap",
+      "state": "Available",
+      "detail": "Creates the local workspace, project, route, dataset, knowledge base, agent, wallet, and API key."
+    },
+    "devSeedReset": {
+      "label": "Dev seed/reset",
+      "state": "Defensive UI",
+      "detail": "Seed falls back to local bootstrap; reset reports backend availability when the dev endpoint is missing."
+    },
+    "modelRoute": {
+      "label": "Model route",
+      "state": "Local default",
+      "detail": "Ollama is seeded as the default route, with extractive fallback when no model is reachable."
+    },
+    "agentDefinition": {
+      "label": "Agent definition",
+      "state": "Created",
+      "detail": "The bootstrap flow creates a document-QA agent linked to the default knowledge base."
+    },
+    "billingPlaceholders": {
+      "label": "Billing config placeholders",
+      "state": "Placeholder",
+      "detail": "Wallet and billing views reserve plan, wallet, and payment settings."
+    },
+    "docsExamples": {
+      "label": "Docs and examples",
+      "state": "Sample ready",
+      "detail": "A support policy sample document is available for smoke testing the document-QA flow."
+    },
+    "ragQuality": {
+      "label": "RAG quality controls",
+      "state": "Client active",
+      "detail": "Top K, score threshold, and no-answer visibility are exposed in the playground."
+    }
+  },
+  "overviewMetrics": {
+    "workspaceMode": {
+      "label": "Workspace mode",
+      "value": "Operator shell",
+      "detail": "Document upload, RAG chat, training, evals, traces, and snippets are available locally."
+    },
+    "serviceProxies": {
+      "label": "Service proxies",
+      "value": "2 configured",
+      "detail": "/api/platform and /api/ai are routed by Next rewrites."
+    },
+    "launchScope": {
+      "label": "Launch scope",
+      "value": "Phase 1.2",
+      "detail": "Document-QA operations, model catalog UI, route status, defensive dev controls, and trace polish."
+    },
+    "billingState": {
+      "label": "Billing state",
+      "value": "Placeholders",
+      "detail": "Wallet and billing paths exist without payment execution."
+    }
+  },
+  "setupQueue": {
+    "runOnboarding": {
+      "label": "Run onboarding",
+      "detail": "Create or confirm the local workspace, route, dataset, knowledge base, agent, wallet, and API key."
+    },
+    "uploadDocuments": {
+      "label": "Upload documents",
+      "detail": "Add .txt, .md, or .pdf documents and track inferred document assets from ingestion jobs."
+    },
+    "askPlayground": {
+      "label": "Ask in playground",
+      "detail": "Use cited extractive RAG locally, or Ollama when it is enabled and reachable."
+    },
+    "reviewTraces": {
+      "label": "Review traces",
+      "detail": "Check answer, retrieved chunks, citations, run id, trace id, latency, cost, and trace metadata."
+    },
+    "trainClassifier": {
+      "label": "Train a classifier",
+      "detail": "Upload a CSV dataset and train a scikit-learn classifier from the Training Lab."
+    },
+    "registerModel": {
+      "label": "Register model version",
+      "detail": "Save trained artifacts to the model registry with candidate/staging/production aliases."
+    }
+  }
+}

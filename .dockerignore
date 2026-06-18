@@ -1,0 +1,40 @@
+# Keep production build contexts lean and reproducible.
+# All three prod Dockerfiles use the repo root as context.
+
+# Node / Next.js
+**/node_modules
+**/.next
+**/out
+npm-debug.log*
+
+# .NET build output
+**/bin
+**/obj
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.coverage
+**/.coverage.*
+**/htmlcov
+.venv
+venv
+
+# Local env / secrets — never bake into an image
+.env
+.env.*
+!.env.prod.example
+
+# Backups and runtime data
+infra/backups
+*.dump
+*.backup
+*.bak
+
+# VCS / editor / agent state
+.git
+.gitignore
+.agents
+.claude-octopus
+AGENTS.md

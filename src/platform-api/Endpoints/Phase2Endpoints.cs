@@ -12,40 +12,40 @@ public static class Phase2Endpoints
         var api = routes.MapGroup("/api/v1").WithTags("Phase 2");
 
         // Dataset card
-        api.MapPatch("/datasets/{datasetId:guid}/card", PatchDatasetCard);
+        api.MapPatch("/datasets/{datasetId:guid}/card", PatchDatasetCard).RequireApiKey("datasets:write");
 
         // Training jobs
-        api.MapGet("/training-jobs", ListTrainingJobs);
-        api.MapPost("/training-jobs", CreateTrainingJob);
-        api.MapGet("/training-jobs/{jobId:guid}", GetTrainingJob);
-        api.MapPatch("/training-jobs/{jobId:guid}", PatchTrainingJob);
+        api.MapGet("/training-jobs", ListTrainingJobs).RequireApiKey("training:read");
+        api.MapPost("/training-jobs", CreateTrainingJob).RequireApiKey("training:write");
+        api.MapGet("/training-jobs/{jobId:guid}", GetTrainingJob).RequireApiKey("training:read");
+        api.MapPatch("/training-jobs/{jobId:guid}", PatchTrainingJob).RequireApiKey("training:write");
 
         // Experiments
-        api.MapGet("/experiments", ListExperiments);
-        api.MapPost("/experiments", CreateExperiment);
-        api.MapGet("/experiments/{experimentId:guid}", GetExperiment);
+        api.MapGet("/experiments", ListExperiments).RequireApiKey("training:read");
+        api.MapPost("/experiments", CreateExperiment).RequireApiKey("training:write");
+        api.MapGet("/experiments/{experimentId:guid}", GetExperiment).RequireApiKey("training:read");
 
         // Model versions
-        api.MapGet("/model-versions", ListModelVersions);
-        api.MapPost("/model-versions", CreateModelVersion);
-        api.MapGet("/model-versions/{versionId:guid}", GetModelVersion);
+        api.MapGet("/model-versions", ListModelVersions).RequireApiKey("models:route");
+        api.MapPost("/model-versions", CreateModelVersion).RequireApiKey("models:route");
+        api.MapGet("/model-versions/{versionId:guid}", GetModelVersion).RequireApiKey("models:route");
 
         // Model aliases
-        api.MapGet("/model-aliases", ListModelAliases);
-        api.MapPost("/model-aliases", SetModelAlias);
-        api.MapGet("/model-aliases/{alias}", GetModelAliasByName);
+        api.MapGet("/model-aliases", ListModelAliases).RequireApiKey("models:route");
+        api.MapPost("/model-aliases", SetModelAlias).RequireApiKey("models:route");
+        api.MapGet("/model-aliases/{alias}", GetModelAliasByName).RequireApiKey("models:route");
 
         // Eval runs
-        api.MapGet("/eval-runs", ListEvalRuns);
-        api.MapPost("/eval-runs", CreateEvalRun);
-        api.MapGet("/eval-runs/{runId:guid}", GetEvalRun);
-        api.MapPatch("/eval-runs/{runId:guid}", PatchEvalRun);
+        api.MapGet("/eval-runs", ListEvalRuns).RequireApiKey("training:read");
+        api.MapPost("/eval-runs", CreateEvalRun).RequireApiKey("training:write");
+        api.MapGet("/eval-runs/{runId:guid}", GetEvalRun).RequireApiKey("training:read");
+        api.MapPatch("/eval-runs/{runId:guid}", PatchEvalRun).RequireApiKey("training:write");
 
         // Human review records
-        api.MapGet("/human-review-records", ListHumanReviewRecords);
-        api.MapPost("/human-review-records", CreateHumanReviewRecord);
-        api.MapGet("/human-review-records/{recordId:guid}", GetHumanReviewRecord);
-        api.MapPatch("/human-review-records/{recordId:guid}", PatchHumanReviewRecord);
+        api.MapGet("/human-review-records", ListHumanReviewRecords).RequireApiKey("training:read");
+        api.MapPost("/human-review-records", CreateHumanReviewRecord).RequireApiKey("training:write");
+        api.MapGet("/human-review-records/{recordId:guid}", GetHumanReviewRecord).RequireApiKey("training:read");
+        api.MapPatch("/human-review-records/{recordId:guid}", PatchHumanReviewRecord).RequireApiKey("training:write");
 
         return routes;
     }
@@ -107,6 +107,13 @@ public static class Phase2Endpoints
             j => j.WorkspaceId == request.WorkspaceId && j.ProjectId == request.ProjectId && j.Slug == slug, cancellationToken);
         if (exists) return Problem(StatusCodes.Status409Conflict, "training_job_slug_conflict", $"Training job slug '{slug}' already exists.");
 
+        // Carry the operator-selected task + target column into the persisted
+        // config (and, downstream, the ai-services /v1/train payload). An explicit
+        // ConfigJson still wins so callers can pin a fully-specified TrainJobConfig.
+        var config = TrainingJobMapping.ToConfig(request);
+        var configJson = request.ConfigJson
+            ?? System.Text.Json.JsonSerializer.Serialize(config);
+
         var job = new TrainingJob
         {
             WorkspaceId = request.WorkspaceId,
@@ -116,9 +123,9 @@ public static class Phase2Endpoints
             ModelRouteId = request.ModelRouteId,
             Name = request.Name.Trim(),
             Slug = slug,
-            Kind = string.IsNullOrWhiteSpace(request.Kind) ? "classification" : request.Kind.Trim(),
+            Kind = config.Task,
             Status = "queued",
-            ConfigJson = request.ConfigJson ?? "{}",
+            ConfigJson = configJson,
             HyperparametersJson = request.HyperparametersJson ?? "{}",
             EstimatedCost = request.EstimatedCost ?? 0,
         };

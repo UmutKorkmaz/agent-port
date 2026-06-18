@@ -7,7 +7,9 @@ namespace AgentPort.PlatformApi.Services;
 
 public sealed class LocalBootstrapService
 {
-    private const string LocalBootstrapApiKey = "ap_local_dev_bootstrap_key_do_not_use_in_production";
+    private static readonly string[] BootstrapScopes =
+        ["workspace:admin", "models:route", "agents:write", "datasets:write", "runs:write", "billing:read"];
+
     private readonly AgentPortDbContext _db;
 
     public LocalBootstrapService(AgentPortDbContext db)
@@ -320,10 +322,10 @@ public sealed class LocalBootstrapService
                 Name = "Document QA Knowledge",
                 Slug = "document-qa",
                 RetrievalStrategy = "basic-rag",
-                EmbeddingModel = "agentport-local-hash-64",
+                EmbeddingModel = "intfloat/multilingual-e5-base",
                 VectorStore = "pgvector",
                 Status = "ready",
-                MetadataJson = """{"bootstrap":"local","ragDefault":true}"""
+                MetadataJson = """{"bootstrap":"local","ragDefault":true,"embeddingDimensions":768}"""
             };
             _db.KnowledgeBases.Add(knowledgeBase);
         }
@@ -394,14 +396,18 @@ public sealed class LocalBootstrapService
             paymentProviderConfigs.Add(config);
         }
 
-        var rawApiKey = LocalBootstrapApiKey;
-        var apiKeyMessage = "Local bootstrap API key is deterministic for local development only.";
+        // Generate a cryptographically random key per bootstrap. The raw value is returned once in
+        // the response and never persisted; only its hash is stored. The "local-bootstrap" row
+        // remains idempotent (same identity, looked up by name) — re-running bootstrap rotates the
+        // key on the existing row rather than creating duplicates.
+        var rawApiKey = ApiKeyHasher.GenerateRawKey();
         var apiKey = await _db.ApiKeys
             .FirstOrDefaultAsync(
                 item => item.WorkspaceId == workspace.Id
                     && item.ServiceAccountId == serviceAccount.Id
                     && item.Name == "local-bootstrap",
                 cancellationToken);
+        string apiKeyMessage;
         if (apiKey is null)
         {
             apiKey = new ApiKey
@@ -410,24 +416,24 @@ public sealed class LocalBootstrapService
                 ProjectId = project.Id,
                 ServiceAccountId = serviceAccount.Id,
                 Name = "local-bootstrap",
-                Prefix = ApiKeyHasher.GetPrefix(LocalBootstrapApiKey),
-                KeyHash = ApiKeyHasher.Hash(LocalBootstrapApiKey),
-                Scopes = ["workspace:admin", "models:route", "agents:write", "datasets:write", "runs:write", "billing:read"],
-                MetadataJson = """{"bootstrap":"local","deterministicDevKey":true}"""
+                Prefix = ApiKeyHasher.GetPrefix(rawApiKey),
+                KeyHash = ApiKeyHasher.Hash(rawApiKey),
+                Scopes = [.. BootstrapScopes],
+                MetadataJson = """{"bootstrap":"local","randomDevKey":true}"""
             };
             _db.ApiKeys.Add(apiKey);
-            apiKeyMessage = "Created deterministic local bootstrap API key for development.";
+            apiKeyMessage = "Created local bootstrap API key. Store it now; it cannot be retrieved later.";
         }
-        else if (apiKey.KeyHash != ApiKeyHasher.Hash(LocalBootstrapApiKey))
+        else
         {
-            apiKey.Prefix = ApiKeyHasher.GetPrefix(LocalBootstrapApiKey);
-            apiKey.KeyHash = ApiKeyHasher.Hash(LocalBootstrapApiKey);
-            apiKey.Scopes = ["workspace:admin", "models:route", "agents:write", "datasets:write", "runs:write", "billing:read"];
-            apiKey.MetadataJson = """{"bootstrap":"local","deterministicDevKey":true,"rotatedFromRandomLocalKey":true}""";
+            apiKey.Prefix = ApiKeyHasher.GetPrefix(rawApiKey);
+            apiKey.KeyHash = ApiKeyHasher.Hash(rawApiKey);
+            apiKey.Scopes = [.. BootstrapScopes];
+            apiKey.MetadataJson = """{"bootstrap":"local","randomDevKey":true,"rotated":true}""";
             apiKey.RevokedAt = null;
             apiKey.ExpiresAt = null;
             apiKey.UpdatedAt = DateTime.UtcNow;
-            apiKeyMessage = "Rotated local bootstrap API key to deterministic development key.";
+            apiKeyMessage = "Rotated local bootstrap API key. Store the new value now; it cannot be retrieved later.";
         }
 
         await _db.SaveChangesAsync(cancellationToken);

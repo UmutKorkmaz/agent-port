@@ -49,7 +49,8 @@ public sealed record CreateTrainingJobRequest(
     string? Kind,
     string? ConfigJson,
     string? HyperparametersJson,
-    decimal? EstimatedCost);
+    decimal? EstimatedCost,
+    string? TargetColumn = null);
 
 public sealed record PatchTrainingJobRequest(
     string? Status,
