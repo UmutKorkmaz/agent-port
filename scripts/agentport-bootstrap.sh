@@ -7,19 +7,19 @@ PLATFORM_API_URL="${PLATFORM_API_URL:-http://localhost:5001}"
 AI_SERVICES_URL="${AI_SERVICES_URL:-http://localhost:5002}"
 WEB_URL="${WEB_URL:-http://127.0.0.1:3002}"
 
-FIXTURE="${FIXTURE:-$ROOT_DIR/examples/defterport/bootstrap.json}"
-SEED_DOCS_DIR="${SEED_DOCS_DIR:-$ROOT_DIR/examples/defterport/seed-docs}"
-CLIENT_DOCS_DIR="${CLIENT_DOCS_DIR:-$ROOT_DIR/examples/defterport/client-folder-sample}"
+FIXTURE="${FIXTURE:-$ROOT_DIR/examples/agentport/bootstrap.json}"
+SEED_DOCS_DIR="${SEED_DOCS_DIR:-$ROOT_DIR/examples/agentport/seed-docs}"
+CLIENT_DOCS_DIR="${CLIENT_DOCS_DIR:-$ROOT_DIR/examples/agentport/client-folder-sample}"
 WAIT_SECONDS="${WAIT_SECONDS:-45}"
 SEED_CLIENT="${SEED_CLIENT:-1}"
 
 usage() {
   cat <<'EOF'
-Usage: scripts/defterport-bootstrap.sh [--no-client]
+Usage: scripts/agentport-bootstrap.sh [--no-client]
 
-Bootstraps a DefterPort firm install against a running AgentPort stack:
+Bootstraps a AgentPort firm install against a running AgentPort stack:
   1. Reuses POST /api/v1/bootstrap/local for the base workspace/project/agent/api key.
-  2. Creates the DefterPort tax-law and client-folder datasets via POST /api/v1/datasets.
+  2. Creates the AgentPort tax-law and client-folder datasets via POST /api/v1/datasets.
   3. Ingests every file under the seed-docs (and client-folder-sample) directories
      through POST /api/v1/datasets/{id}/documents.
   4. Prints a JSON summary of the resulting ids and the bootstrap API key.
@@ -171,7 +171,7 @@ require curl
 require jq
 
 if [ ! -f "$FIXTURE" ]; then
-  echo "DefterPort fixture not found: $FIXTURE" >&2
+  echo "AgentPort fixture not found: $FIXTURE" >&2
   exit 1
 fi
 
@@ -200,7 +200,7 @@ if [ -z "$WORKSPACE_ID" ] || [ -z "$PROJECT_ID" ] || [ -z "$AGENT_ID" ]; then
   exit 1
 fi
 
-# Pull the two DefterPort dataset descriptors from the fixture (by role).
+# Pull the two AgentPort dataset descriptors from the fixture (by role).
 TAX_LAW_NAME="$(jq -r '.datasets[] | select(.role == "tax-law-seed") | .name' "$FIXTURE")"
 TAX_LAW_SLUG="$(jq -r '.datasets[] | select(.role == "tax-law-seed") | .slug' "$FIXTURE")"
 TAX_LAW_KIND="$(jq -r '.datasets[] | select(.role == "tax-law-seed") | .kind' "$FIXTURE")"
@@ -208,7 +208,7 @@ CLIENT_NAME="$(jq -r '.datasets[] | select(.role == "client-folder") | .name' "$
 CLIENT_SLUG="$(jq -r '.datasets[] | select(.role == "client-folder") | .slug' "$FIXTURE")"
 CLIENT_KIND="$(jq -r '.datasets[] | select(.role == "client-folder") | .kind' "$FIXTURE")"
 
-echo "Creating DefterPort datasets..." >&2
+echo "Creating AgentPort datasets..." >&2
 TAX_LAW_DATASET_ID="$(create_dataset "$WORKSPACE_ID" "$PROJECT_ID" "$AGENT_ID" "$TAX_LAW_NAME" "$TAX_LAW_SLUG" "$TAX_LAW_KIND")"
 CLIENT_DATASET_ID="$(create_dataset "$WORKSPACE_ID" "$PROJECT_ID" "$AGENT_ID" "$CLIENT_NAME" "$CLIENT_SLUG" "$CLIENT_KIND")"
 
@@ -238,7 +238,7 @@ jq -n \
   --argjson ingested "$INGESTED_JSON" \
   '{
     status: "bootstrapped",
-    product: "defterport",
+    product: "agentport",
     platformApiUrl: $platformApiUrl,
     aiServicesUrl: $aiServicesUrl,
     webUrl: $webUrl,

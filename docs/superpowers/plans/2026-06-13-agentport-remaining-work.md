@@ -1,8 +1,8 @@
-# DefterPort Remaining Work Implementation Plan
+# AgentPort Remaining Work Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. **Executed here as a dynamic Workflow: three parallel tracks (A Python / B .NET / C Web), sequential test-gated stages within each track, adversarial review on each hardening diff.**
 
-**Goal:** Complete four deferred items — Python/.NET/Web monolith refactors with targeted hardening, the training-form correctness fix, .NET auth-floor integration tests, and full operator-console i18n — without changing the auth/embedding/sovereign/KVKK behavior shipped earlier on `feat/defterport-pilot-hardening`.
+**Goal:** Complete four deferred items — Python/.NET/Web monolith refactors with targeted hardening, the training-form correctness fix, .NET auth-floor integration tests, and full operator-console i18n — without changing the auth/embedding/sovereign/KVKK behavior shipped earlier on `feat/agentport-pilot-hardening`.
 
 **Architecture:** File footprints partition into three disjoint trees (`src/ai-services`, `src/platform-api`, `src/web`). Tracks run in parallel; stages within a track run in sequence. Each refactor extraction is behavior-preserving and gated by the existing test suite (characterization); each hardening change is a small isolated diff gated by tests + an adversarial review agent. The web tree is internally sequenced (split → i18n → Playwright) because three workstreams touch it.
 
@@ -236,7 +236,7 @@ export const config = { matcher: ['/((?!_next|.*\\..*).*)'] };
 
 **Files:** Modify every `src/web/components/<View>.tsx` + nav; extend `messages/{en,tr}.json`.
 
-- [ ] **Step 1:** Replace hardcoded strings across all views with `useTranslations(namespace)` `t()` calls; add matching keys to both `en.json` and `tr.json` (full-console coverage). Include DefterPort copy: citation label `Kaynak`, the no-answer message (`Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.`).
+- [ ] **Step 1:** Replace hardcoded strings across all views with `useTranslations(namespace)` `t()` calls; add matching keys to both `en.json` and `tr.json` (full-console coverage). Include AgentPort copy: citation label `Kaynak`, the no-answer message (`Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.`).
 - [ ] **Step 2:** Verify no literal user-facing English remains in the views (grep for stray quotes in JSX text); both message files have identical key sets.
 - [ ] **Step 3:** `npm run build && npm run lint` clean.
 - [ ] **Step 4:** Commit: `feat(web): full operator-console Turkish/English localization`

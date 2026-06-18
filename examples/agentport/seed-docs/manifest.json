@@ -1,8 +1,8 @@
 {
-  "seed_pack": "defterport-seed-pack",
+  "seed_pack": "agentport-seed-pack",
   "version": "0.1.0",
   "version_updated": "2026-06-08",
-  "schema": "defterport-seed-doc-meta/v1",
+  "schema": "agentport-seed-doc-meta/v1",
   "total_count": 6,
   "placeholder_count": 6,
   "launch_gate_min_docs": 20,

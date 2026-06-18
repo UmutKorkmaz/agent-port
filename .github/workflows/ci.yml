@@ -112,7 +112,7 @@ jobs:
             echo "MINIO_ROOT_PASSWORD=$(openssl rand -hex 16)"
             echo "MINIO_BUCKET=ci"
             echo "AI_SERVICES_INTERNAL_TOKEN=$(openssl rand -hex 32)"
-            echo "DEFTERPORT_SITE_ADDRESS=https://localhost"
+            echo "AGENTPORT_SITE_ADDRESS=https://localhost"
             echo "OLLAMA_ENABLED=false"
           } > .env.prod
 

@@ -1,11 +1,11 @@
-# AgentPort / DefterPort — TLS-terminating reverse proxy.
+# AgentPort / AgentPort — TLS-terminating reverse proxy.
 #
 # Caddy is the ONLY service exposed to the LAN (ports 443 + 80). It terminates TLS
 # and forwards plain HTTP to the `web` container on the internal compose network.
 # The web app then proxies /api/platform/* and /api/ai/* to platform-api and
 # ai-services via its Next.js rewrites, so those services never need a host port.
 #
-# DEFTERPORT_SITE_ADDRESS controls the site label:
+# AGENTPORT_SITE_ADDRESS controls the site label:
 #   * Default `https://localhost` (or any non-public hostname) => Caddy uses its
 #     INTERNAL CA and serves a self-signed cert. Good for a LAN-only box. Browsers
 #     will warn once; trust the Caddy root CA (printed at /data/caddy/pki) to silence it.
@@ -20,11 +20,11 @@
 	# local_certs
 }
 
-{$DEFTERPORT_SITE_ADDRESS:https://localhost} {
+{$AGENTPORT_SITE_ADDRESS:https://localhost} {
 	# --- TLS ---
 	# For a real public certificate, DELETE the `tls internal` line below and set
-	# DEFTERPORT_SITE_ADDRESS to your FQDN (e.g. https://defterport.firma.local is
-	# still internal; https://defterport.example.com gets a real ACME cert).
+	# AGENTPORT_SITE_ADDRESS to your FQDN (e.g. https://agentport.firma.local is
+	# still internal; https://agentport.example.com gets a real ACME cert).
 	# To install a cert you already own instead, replace this with:
 	#   tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
 	# and mount the cert files into the caddy container.

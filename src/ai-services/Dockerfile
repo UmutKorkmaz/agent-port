@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# AgentPort / DefterPort — ai-services production image.
+# AgentPort / AgentPort — ai-services production image.
 #
 # Image size note: the dependency weight is torch + sentence-transformers.
 #   - CPU-only torch wheel (installed below via the PyTorch CPU index) is ~190 MB

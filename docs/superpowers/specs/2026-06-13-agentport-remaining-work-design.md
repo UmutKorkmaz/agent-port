@@ -1,13 +1,13 @@
-# DefterPort Remaining Work — Design Spec
+# AgentPort Remaining Work — Design Spec
 
 **Date:** 2026-06-13
-**Branch:** `feat/defterport-pilot-hardening`
+**Branch:** `feat/agentport-pilot-hardening`
 **Status:** Approved for planning
 **Execution vehicle:** dynamic Workflow (parallel tracks, sequential stages, test-gated, adversarial-reviewed)
 
 ## 1. Goal
 
-Complete the four deferred items from the AgentPort/DefterPort review without destabilizing the auth, embedding, and sovereign-mode code shipped earlier on this branch. All work is behavior-preserving except explicitly scoped hardening and the training-form correctness fix.
+Complete the four deferred items from the AgentPort/AgentPort review without destabilizing the auth, embedding, and sovereign-mode code shipped earlier on this branch. All work is behavior-preserving except explicitly scoped hardening and the training-form correctness fix.
 
 ## 2. Scope
 
@@ -20,7 +20,7 @@ In scope (four independent workstreams):
 
 Explicitly out of scope (cannot be completed here):
 
-- **Real mevzuat content** — a licensing/legal decision; see `examples/defterport/seed-docs/SOURCES.md`. No tax-law content is fabricated.
+- **Real mevzuat content** — a licensing/legal decision; see `examples/agentport/seed-docs/SOURCES.md`. No tax-law content is fabricated.
 - **p95 latency measurement** — only meaningful on real pilot hardware (~8 vCPU/32 GB CPU). The Playwright smoke verifies UI-flow wiring (with `EMBEDDING_BACKEND=hash` for speed/determinism), not retrieval quality or latency.
 
 ## 3. Orchestration strategy
@@ -76,7 +76,7 @@ Track C (Web)    : 3b split monolith (+ WS-1 web fix) ─► WS-4 i18n ─► Pl
 - `getRequestConfig` + `NextIntlClientProvider` in `layout.tsx`; dynamic `<html lang>`.
 - `src/web/messages/en.json` + `src/web/messages/tr.json`; replace hardcoded strings with `t()` across all extracted components (full-console coverage).
 - A TR/EN toggle component that sets the cookie and refreshes.
-- DefterPort copy: citation label `Kaynak`, the no-answer message, and key SMMM-facing strings.
+- AgentPort copy: citation label `Kaynak`, the no-answer message, and key SMMM-facing strings.
 - `next-intl` added to `package.json`.
 
 **Playwright smoke** (`src/web` — the web track's real gate, closing the Phase-1.1 gap):

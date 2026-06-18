@@ -29,7 +29,7 @@ from typing import Any, Dict, Optional
 
 from agentport.models import DEFAULT_CHAT_MODEL, ChatRequest
 
-# Sovereign mode is default-on for DefterPort: egress to any non-local provider
+# Sovereign mode is default-on for AgentPort: egress to any non-local provider
 # is locked off regardless of route/provider config.
 DEFAULT_SOVEREIGN_MODE = True
 

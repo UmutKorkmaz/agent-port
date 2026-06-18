@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# DefterPort QA smoke runner.
+# AgentPort QA smoke runner.
 #
-# Iterates examples/defterport/benchmark.json, POSTs each Turkish question to the
+# Iterates examples/agentport/benchmark.json, POSTs each Turkish question to the
 # AgentPort chat API, and asserts the launch-readiness MVP success criteria:
 #
 #   (a) tax-law / client-folder cases cite the expected document
@@ -13,21 +13,21 @@ set -euo pipefail
 #   (d) FAIL (exit 1) if tax-law < 8/10 or client-folder < 5/5
 #
 # Bring-up / seeding precedence:
-#   1. DEFTERPORT_DATASET_ID + AGENT_ID + (optional) API key via env/args
-#   2. scripts/defterport-bootstrap.sh (if present) -> JSON with ids
+#   1. AGENTPORT_DATASET_ID + AGENT_ID + (optional) API key via env/args
+#   2. scripts/agentport-bootstrap.sh (if present) -> JSON with ids
 #   3. scripts/dev-reset.sh fallback (SEED_SAMPLE path)
 #
 # Usage:
-#   scripts/defterport-smoke.sh
-#   AGENT_ID=<uuid> AGENTPORT_API_KEY=ap_xxx scripts/defterport-smoke.sh
-#   scripts/defterport-smoke.sh --agent <uuid> --api-key ap_xxx --dataset <uuid>
+#   scripts/agentport-smoke.sh
+#   AGENT_ID=<uuid> AGENTPORT_API_KEY=ap_xxx scripts/agentport-smoke.sh
+#   scripts/agentport-smoke.sh --agent <uuid> --api-key ap_xxx --dataset <uuid>
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 PLATFORM_API_URL="${PLATFORM_API_URL:-http://localhost:5001}"
 AI_SERVICES_URL="${AI_SERVICES_URL:-http://localhost:5002}"
-BENCHMARK_FILE="${BENCHMARK_FILE:-$ROOT_DIR/examples/defterport/benchmark.json}"
-BOOTSTRAP_SCRIPT="${BOOTSTRAP_SCRIPT:-$ROOT_DIR/scripts/defterport-bootstrap.sh}"
+BENCHMARK_FILE="${BENCHMARK_FILE:-$ROOT_DIR/examples/agentport/benchmark.json}"
+BOOTSTRAP_SCRIPT="${BOOTSTRAP_SCRIPT:-$ROOT_DIR/scripts/agentport-bootstrap.sh}"
 
 # No-answer cases query with a deliberately high score threshold so the
 # retrieval gate is exercised even when the corpus has loosely related chunks.
@@ -40,7 +40,7 @@ CLIENT_FOLDER_PASS_MIN="${CLIENT_FOLDER_PASS_MIN:-5}"
 CLIENT_FOLDER_TOTAL_TARGET="${CLIENT_FOLDER_TOTAL_TARGET:-5}"
 
 AGENT_ID="${AGENT_ID:-}"
-DATASET_ID="${DEFTERPORT_DATASET_ID:-${DATASET_ID:-}}"
+DATASET_ID="${AGENTPORT_DATASET_ID:-${DATASET_ID:-}}"
 API_KEY="${AGENTPORT_API_KEY:-${API_KEY:-}}"
 
 while [ "$#" -gt 0 ]; do
@@ -65,7 +65,7 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 
 require() {
   if ! command -v "$1" >/dev/null 2>&1; then
-    echo "$1 is required for DefterPort smoke checks." >&2
+    echo "$1 is required for AgentPort smoke checks." >&2
     exit 1
   fi
 }
@@ -85,7 +85,7 @@ jq empty "$BENCHMARK_FILE" >/dev/null 2>&1 || fail "benchmark file is not valid 
 # ---------------------------------------------------------------------------
 if [ -z "$AGENT_ID" ]; then
   if [ -x "$BOOTSTRAP_SCRIPT" ]; then
-    echo "Bootstrapping DefterPort via $BOOTSTRAP_SCRIPT ..." >&2
+    echo "Bootstrapping AgentPort via $BOOTSTRAP_SCRIPT ..." >&2
     BOOT_JSON="$("$BOOTSTRAP_SCRIPT")"
   elif [ -x "$ROOT_DIR/scripts/dev-reset.sh" ]; then
     echo "No bootstrap script; falling back to scripts/dev-reset.sh ..." >&2
@@ -147,7 +147,7 @@ chat_request() {
 # The chat response exposes provider_response.provider (local|ollama|cloud)
 # and provider_response.metadata.runtime_route.{provider_kind,provider_name}.
 # A cloud provider only fires when PROVIDER_LIVE_CALLS is enabled AND a cloud
-# route is configured; for DefterPort on-prem we require local/ollama.
+# route is configured; for AgentPort on-prem we require local/ollama.
 # Returns 0 (egress safe) or 1 (cloud leak).
 # ---------------------------------------------------------------------------
 assert_zero_egress() {
@@ -267,7 +267,7 @@ done
 # Scorecard + gate.
 # ---------------------------------------------------------------------------
 echo
-echo "DefterPort benchmark scorecard:"
+echo "AgentPort benchmark scorecard:"
 echo "  tax-law:       $tax_pass / $tax_total  (min $TAX_LAW_PASS_MIN of $TAX_LAW_TOTAL_TARGET)"
 echo "  client-folder: $client_pass / $client_total  (min $CLIENT_FOLDER_PASS_MIN of $CLIENT_FOLDER_TOTAL_TARGET)"
 echo "  no-answer:     $noans_pass / $noans_total"
@@ -296,8 +296,8 @@ if [ "$client_pass" -lt "$CLIENT_FOLDER_PASS_MIN" ]; then
 fi
 
 if [ "$GATE_FAILED" != "0" ]; then
-  fail "DefterPort launch-readiness gates did not pass"
+  fail "AgentPort launch-readiness gates did not pass"
 fi
 
 echo
-echo "DefterPort smoke completed: all launch-readiness gates passed."
+echo "AgentPort smoke completed: all launch-readiness gates passed."

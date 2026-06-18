@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# AgentPort / DefterPort — platform-api production image.
+# AgentPort / AgentPort — platform-api production image.
 # Multi-stage: .NET 10 SDK builds a trimmed publish output, aspnet:10 runs it as non-root.
 # Build context MUST be the repo root (the .sln references sibling projects), e.g.:
 #   docker build -f src/platform-api/Dockerfile -t agentport/platform-api .

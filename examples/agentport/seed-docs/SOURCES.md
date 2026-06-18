@@ -1,8 +1,8 @@
 # Seed Doc Sources & Licensing
 
-This document defines how the DefterPort seed doc pack is sourced, licensed, and
+This document defines how the AgentPort seed doc pack is sourced, licensed, and
 kept fresh. It is the authoritative process reference for the contents of
-`examples/defterport/seed-docs/`.
+`examples/agentport/seed-docs/`.
 
 ## Current status: ALL DOCUMENTS ARE PLACEHOLDERS
 
@@ -39,7 +39,7 @@ Sourcing checklist for each replacement document:
 
 ## Launch gate: ≥ 20 documents
 
-The DefterPort MVP success criteria require ingesting **at least 20** Turkish tax
+The AgentPort MVP success criteria require ingesting **at least 20** Turkish tax
 law seed documents and answering 8/10 benchmark questions with correct citations
 (see `docs/LAUNCH.md`). This pack currently contains **6** documents — all
 placeholders — so it does **not** meet the launch gate. The gate is met only
@@ -53,9 +53,9 @@ thresholds, stopaj rates, and SGK rules all date quickly, so a stale pack is a
 correctness and liability risk.
 
 - The pack is version-stamped in `seed-docs/VERSION`
-  (currently `defterport-seed-pack 0.1.0`).
+  (currently `agentport-seed-pack 0.1.0`).
 - Pilot firms receive a **quarterly mevzuat delta pack** (manual rsync or
-  re-ingest), as described in `docs/products/DEFTERPORT.md`.
+  re-ingest), as described in `docs/products/AGENTPORT.md`.
 - Any content change — replacing a placeholder, updating an article, or adding a
   document — MUST bump `seed-docs/VERSION` and update `manifest.json`
   (`version`, `version_updated`, counts, and per-document `sha256`).

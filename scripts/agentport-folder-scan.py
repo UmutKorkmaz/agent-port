@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DefterPort folder scan / NAS ingestion CLI.
+AgentPort folder scan / NAS ingestion CLI.
 
 Walks a NAS/SMB watch path laid out like:
 
@@ -21,7 +21,7 @@ re-POSTing unchanged files this scanner keeps a small local manifest keyed by
 relative path -> sha256, stored next to the watch path by default.
 
 Usage:
-    python3 scripts/defterport-folder-scan.py \
+    python3 scripts/agentport-folder-scan.py \
         --watch-path "/Mukellefler" \
         --dataset-id 11111111-1111-1111-1111-111111111111 \
         --api-key dp_live_xxx \
@@ -56,7 +56,7 @@ except ImportError:  # pragma: no cover - environment dependent
 
 
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".md", ".txt"}
-MANIFEST_FILENAME = ".defterport-folder-scan.json"
+MANIFEST_FILENAME = ".agentport-folder-scan.json"
 HASH_CHUNK_BYTES = 1024 * 1024
 # Top-level dir shape: "{VKN} - {Unvan}". VKN is 10 (VKN) or 11 (TCKN) digits.
 _CLIENT_DIR_PATTERN = re.compile(r"^\s*(?P<vkn>\d{10,11})\s*-\s*(?P<unvan>.+?)\s*$")
@@ -190,7 +190,7 @@ def summarize_action(action: str, scan_file: ScanFile, detail: str = "") -> str:
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Scan a DefterPort client folder tree and upload new/changed documents.",
+        description="Scan a AgentPort client folder tree and upload new/changed documents.",
     )
     parser.add_argument("--watch-path", required=True, help="Root NAS/SMB watch path (e.g. /Mukellefler).")
     parser.add_argument("--dataset-id", required=True, help="Target AgentPort dataset id (GUID).")
@@ -203,7 +203,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument(
         "--manifest",
         default=None,
-        help="Path to the local sync manifest (default: <watch-path>/.defterport-folder-scan.json).",
+        help="Path to the local sync manifest (default: <watch-path>/.agentport-folder-scan.json).",
     )
     parser.add_argument(
         "--dry-run",

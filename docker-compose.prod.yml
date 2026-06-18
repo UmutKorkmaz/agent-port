@@ -1,4 +1,4 @@
-# AgentPort / DefterPort — single-node on-prem PRODUCTION stack.
+# AgentPort / AgentPort — single-node on-prem PRODUCTION stack.
 #
 # Security posture (see docs/install-runbook.md for the full rationale):
 #   * Only Caddy publishes a host port (443). Every other service is reachable
@@ -16,7 +16,7 @@
 #
 # This file is ADDITIVE. It does not replace the dev docker-compose.yml.
 
-name: defterport-prod
+name: agentport-prod
 
 services:
   postgres:
@@ -262,7 +262,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
-      DEFTERPORT_SITE_ADDRESS: ${DEFTERPORT_SITE_ADDRESS:-https://localhost}
+      AGENTPORT_SITE_ADDRESS: ${AGENTPORT_SITE_ADDRESS:-https://localhost}
     deploy:
       resources:
         limits:

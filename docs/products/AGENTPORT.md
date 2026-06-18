@@ -1,4 +1,4 @@
-# DefterPort Product Specification
+# AgentPort Product Specification
 
 **Version:** 0.1 (MVP)  
 **Powered by:** AgentPort control plane  
@@ -6,9 +6,9 @@
 
 ## Product Summary
 
-DefterPort is an on-prem document QA assistant for Turkish accounting firms. It answers staff questions using two grounded corpora:
+AgentPort is an on-prem document QA assistant for Turkish accounting firms. It answers staff questions using two grounded corpora:
 
-1. **Turkish tax law doc pack** — seed mevzuat, tebliğler, and reference guides maintained in `examples/defterport/seed-docs/`.
+1. **Turkish tax law doc pack** — seed mevzuat, tebliğler, and reference guides maintained in `examples/agentport/seed-docs/`.
 2. **Client folder ingestion** — firm-specific files from mükellef directories (beyannameler, sözleşmeler, yazışmalar, iç notlar).
 
 Every answer must include **citations** to retrieved chunks. If retrieval confidence is below threshold, the system returns a controlled **no-answer** response instead of hallucinating.
@@ -30,7 +30,7 @@ Staff repeatedly ask the same questions about KDV, stopaj, SGK, e-Fatura, and be
 │  SMMM office (on-prem / private VPC)                        │
 │                                                             │
 │  ┌──────────────┐    ┌──────────────┐    ┌─────────────┐ │
-│  │ Client       │    │ Turkish tax  │    │ DefterPort  │ │
+│  │ Client       │    │ Turkish tax  │    │ AgentPort  │ │
 │  │ folder watch │───▶│ law seed     │───▶│ AgentPort   │ │
 │  │ (NAS / SMB)  │    │ doc pack     │    │ RAG stack   │ │
 │  └──────────────┘    └──────────────┘    └──────┬──────┘ │
@@ -57,7 +57,7 @@ MVP uses API key scopes from AgentPort Phase 0/1. Full RBAC is post-MVP.
 
 ### 1. Turkish tax law doc pack
 
-Pre-built seed corpus for pilot installs. Categories under `examples/defterport/seed-docs/`:
+Pre-built seed corpus for pilot installs. Categories under `examples/agentport/seed-docs/`:
 
 | Folder | Contents (placeholder structure) |
 |--------|----------------------------------|
@@ -76,7 +76,7 @@ Pre-built seed corpus for pilot installs. Categories under `examples/defterport/
 
 **Update cadence:**
 
-- Seed pack versioned in git (`examples/defterport/seed-docs/VERSION`)
+- Seed pack versioned in git (`examples/agentport/seed-docs/VERSION`)
 - Pilot firms receive quarterly mevzuat delta pack (manual rsync or re-ingest)
 
 ### 2. Client folder ingestion
@@ -118,7 +118,7 @@ Firms map one or more watch paths to AgentPort datasets.
 
 ### 3. Cited answers
 
-DefterPort uses the AgentPort AI services RAG path:
+AgentPort uses the AgentPort AI services RAG path:
 
 1. Embed question (deterministic local embeddings in dev; configurable in prod)
 2. Retrieve top-k chunks from pgvector
@@ -178,9 +178,9 @@ DefterPort uses the AgentPort AI services RAG path:
 ### Flow A — First install (IT + Partner)
 
 1. Run `scripts/dev-up.sh` (or production compose overlay).
-2. Bootstrap DefterPort workspace from `examples/defterport/bootstrap.json` (planned fixture).
-3. Ingest `examples/defterport/seed-docs/`.
-4. Run `scripts/smoke.sh` with DefterPort question set.
+2. Bootstrap AgentPort workspace from `examples/agentport/bootstrap.json` (planned fixture).
+3. Ingest `examples/agentport/seed-docs/`.
+4. Run `scripts/smoke.sh` with AgentPort question set.
 5. Partner opens web playground, asks 3 live questions, verifies citations.
 
 ### Flow B — Add client folder
@@ -229,7 +229,7 @@ AI services: `http://localhost:5002`
 
 ## Data Model Mapping
 
-| DefterPort concept | AgentPort entity |
+| AgentPort concept | AgentPort entity |
 |--------------------|------------------|
 | Firm install | `Workspace` |
 | Mükellef corpus | `Dataset` + `KnowledgeBase` |
@@ -252,4 +252,4 @@ AI services: `http://localhost:5002`
 
 - Launch strategy & pricing: `docs/LAUNCH.md`
 - Local stack quickstart: `docs/quickstart.md`
-- Example seed structure: `examples/defterport/README.md`
+- Example seed structure: `examples/agentport/README.md`

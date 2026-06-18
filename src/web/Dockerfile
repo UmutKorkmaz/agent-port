@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# AgentPort / DefterPort — web (Next.js 15) production image.
+# AgentPort / AgentPort — web (Next.js 15) production image.
 # Multi-stage: node:20 builds the standalone output, node:20-slim runs it as non-root.
 # Relies on next.config.ts `output: "standalone"`.
 #

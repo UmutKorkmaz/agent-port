@@ -1,6 +1,6 @@
-# DefterPort — Single-Node On-Prem Install Runbook
+# AgentPort — Single-Node On-Prem Install Runbook
 
-This runbook installs the full DefterPort stack on **one machine** (a Windows file
+This runbook installs the full AgentPort stack on **one machine** (a Windows file
 server or a Linux box) using Docker Compose. It is built for an SMMM (mali müşavir)
 firm with **no DevOps staff**: copy, fill in a few secrets, run two commands.
 
@@ -55,7 +55,7 @@ Security defaults baked into `docker-compose.prod.yml`:
   (Settings → General → "Use the WSL 2 based engine")
 - Allocate ≥ 8 GB RAM to WSL2 (Docker Desktop → Settings → Resources)
 - Run all commands below **inside the WSL2 shell** (e.g. Ubuntu), with the repo
-  checked out **on the Linux filesystem** (`~/defterport`), NOT under `/mnt/c/...`
+  checked out **on the Linux filesystem** (`~/agentport`), NOT under `/mnt/c/...`
   — bind-mount performance and file permissions are far better there.
 - `openssl`, `jq`, `curl` inside WSL2 (`sudo apt install openssl jq curl`)
 
@@ -67,8 +67,8 @@ Security defaults baked into `docker-compose.prod.yml`:
 ## 3. Get the code onto the box
 
 ```bash
-git clone <your-defterport-repo> defterport
-cd defterport
+git clone <your-agentport-repo> agentport
+cd agentport
 ```
 
 (Or copy the repo via USB / file share to the server, then `cd` into it.)
@@ -100,7 +100,7 @@ Edit `.env.prod` and replace every `CHANGE_ME_*` placeholder:
   → a **different** 32-char value each.
 - `AI_SERVICES_INTERNAL_TOKEN` → one 64-hex value (used by both platform-api and
   ai-services; compose wires the same variable into both).
-- `DEFTERPORT_SITE_ADDRESS` → `https://localhost` for a LAN box, or a real FQDN
+- `AGENTPORT_SITE_ADDRESS` → `https://localhost` for a LAN box, or a real FQDN
   for an automatic public certificate (see §8).
 
 > **Back these up offline immediately** (password manager / sealed envelope).
@@ -144,7 +144,7 @@ on a self-signed/internal cert — that is expected (§8).
 ## 6. First-run bootstrap & seed (the "bootstrap dance")
 
 The seed endpoints are **disabled in prod**. To seed the firm's base workspace,
-agent, API key, and the DefterPort tax-law + client-folder datasets, temporarily
+agent, API key, and the AgentPort tax-law + client-folder datasets, temporarily
 enable them with the bootstrap override, run the seed, then turn them back off.
 
 ```bash
@@ -155,7 +155,7 @@ docker compose -f docker-compose.prod.yml -f docker-compose.prod.bootstrap.yml \
   --env-file .env.prod up -d
 
 # 6.2 — run the seed (talks to 127.0.0.1:5001 and 127.0.0.1:5002).
-scripts/defterport-bootstrap.sh        # add --no-client to skip the sample client folder
+scripts/agentport-bootstrap.sh        # add --no-client to skip the sample client folder
 
 # The script prints a JSON summary INCLUDING the bootstrap API key — copy it now.
 
@@ -172,7 +172,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.prod exec platform-api
 # expect: 404
 ```
 
-> On Windows/WSL2 run all three steps inside the WSL2 shell. `scripts/defterport-bootstrap.sh`
+> On Windows/WSL2 run all three steps inside the WSL2 shell. `scripts/agentport-bootstrap.sh`
 > needs `curl` and `jq` available there.
 
 ### Optional: enable Ollama for generative answers
@@ -193,7 +193,7 @@ Sovereign mode still blocks every non-Ollama provider.
 ## 7. Backup & restore
 
 Postgres and MinIO are backed up **independently** by the scripts already in the
-repo. The compose project name is `defterport-prod`, so point the backup scripts
+repo. The compose project name is `agentport-prod`, so point the backup scripts
 at it via `COMPOSE_PROJECT_NAME` and the prod compose file.
 
 > ⚠️ **Consistency caveat:** the DB dump and the MinIO mirror are taken
@@ -211,7 +211,7 @@ simplest reliable approach is a small wrapper that sources `.env.prod`:
 ```bash
 # Linux/WSL2 — run from the repo root
 set -a; . ./.env.prod; set +a
-export COMPOSE_PROJECT_NAME=defterport-prod
+export COMPOSE_PROJECT_NAME=agentport-prod
 
 # Postgres -> infra/backups/postgres/<db>_<timestamp>.dump (+ .sha256)
 COMPOSE_FILE=docker-compose.prod.yml infra/scripts/postgres-backup.sh
@@ -231,12 +231,12 @@ COMPOSE_FILE=docker-compose.prod.yml infra/scripts/minio-backup.sh
 **Linux (cron)** — nightly at 02:30, e.g. `crontab -e`:
 
 ```cron
-30 2 * * * cd /home/defterport/defterport && set -a && . ./.env.prod && set +a && \
-  COMPOSE_PROJECT_NAME=defterport-prod COMPOSE_FILE=docker-compose.prod.yml \
-  ./infra/scripts/postgres-backup.sh >> /var/log/defterport-backup.log 2>&1
-35 2 * * * cd /home/defterport/defterport && set -a && . ./.env.prod && set +a && \
-  COMPOSE_PROJECT_NAME=defterport-prod COMPOSE_FILE=docker-compose.prod.yml \
-  ./infra/scripts/minio-backup.sh >> /var/log/defterport-backup.log 2>&1
+30 2 * * * cd /home/agentport/agentport && set -a && . ./.env.prod && set +a && \
+  COMPOSE_PROJECT_NAME=agentport-prod COMPOSE_FILE=docker-compose.prod.yml \
+  ./infra/scripts/postgres-backup.sh >> /var/log/agentport-backup.log 2>&1
+35 2 * * * cd /home/agentport/agentport && set -a && . ./.env.prod && set +a && \
+  COMPOSE_PROJECT_NAME=agentport-prod COMPOSE_FILE=docker-compose.prod.yml \
+  ./infra/scripts/minio-backup.sh >> /var/log/agentport-backup.log 2>&1
 ```
 
 (The 5-minute gap keeps the two backups close together; pause `web` in the window
@@ -246,14 +246,14 @@ if you need them tighter.)
 WSL2 shell. From an elevated PowerShell:
 
 ```powershell
-schtasks /Create /SC DAILY /ST 02:30 /TN "DefterPort-PgBackup" /TR `
-  "wsl.exe -d Ubuntu -- bash -lc 'cd ~/defterport && set -a && . ./.env.prod && set +a && COMPOSE_PROJECT_NAME=defterport-prod COMPOSE_FILE=docker-compose.prod.yml ./infra/scripts/postgres-backup.sh'"
+schtasks /Create /SC DAILY /ST 02:30 /TN "AgentPort-PgBackup" /TR `
+  "wsl.exe -d Ubuntu -- bash -lc 'cd ~/agentport && set -a && . ./.env.prod && set +a && COMPOSE_PROJECT_NAME=agentport-prod COMPOSE_FILE=docker-compose.prod.yml ./infra/scripts/postgres-backup.sh'"
 
-schtasks /Create /SC DAILY /ST 02:35 /TN "DefterPort-MinioBackup" /TR `
-  "wsl.exe -d Ubuntu -- bash -lc 'cd ~/defterport && set -a && . ./.env.prod && set +a && COMPOSE_PROJECT_NAME=defterport-prod COMPOSE_FILE=docker-compose.prod.yml ./infra/scripts/minio-backup.sh'"
+schtasks /Create /SC DAILY /ST 02:35 /TN "AgentPort-MinioBackup" /TR `
+  "wsl.exe -d Ubuntu -- bash -lc 'cd ~/agentport && set -a && . ./.env.prod && set +a && COMPOSE_PROJECT_NAME=agentport-prod COMPOSE_FILE=docker-compose.prod.yml ./infra/scripts/minio-backup.sh'"
 ```
 
-(Adjust `-d Ubuntu` to your WSL distro name and `~/defterport` to your checkout.)
+(Adjust `-d Ubuntu` to your WSL distro name and `~/agentport` to your checkout.)
 
 ### 7.3 Retention / pruning
 
@@ -261,9 +261,9 @@ Keep ~14 daily Postgres dumps and MinIO snapshots; prune older ones. Add a daily
 prune (Linux cron example):
 
 ```cron
-0 3 * * * find /home/defterport/defterport/infra/backups/postgres -type f -name '*.dump'   -mtime +14 -delete
-1 3 * * * find /home/defterport/defterport/infra/backups/postgres -type f -name '*.sha256' -mtime +14 -delete
-2 3 * * * find /home/defterport/defterport/infra/backups/minio -mindepth 1 -maxdepth 1 -type d -mtime +14 -exec rm -rf {} +
+0 3 * * * find /home/agentport/agentport/infra/backups/postgres -type f -name '*.dump'   -mtime +14 -delete
+1 3 * * * find /home/agentport/agentport/infra/backups/postgres -type f -name '*.sha256' -mtime +14 -delete
+2 3 * * * find /home/agentport/agentport/infra/backups/minio -mindepth 1 -maxdepth 1 -type d -mtime +14 -exec rm -rf {} +
 ```
 
 ### 7.4 Off-box copy (do NOT skip)
@@ -273,10 +273,10 @@ backup, copy the latest dump + MinIO snapshot to a second location:
 
 ```bash
 # Examples — pick what the firm has:
-rsync -a --delete infra/backups/ /mnt/nas/defterport-backups/        # LAN NAS
-rsync -a infra/backups/ backup-user@10.0.0.9:/srv/defterport/        # second box
+rsync -a --delete infra/backups/ /mnt/nas/agentport-backups/        # LAN NAS
+rsync -a infra/backups/ backup-user@10.0.0.9:/srv/agentport/        # second box
 # or robocopy from Windows to a mapped network drive / external USB:
-#   robocopy "\\wsl$\Ubuntu\home\defterport\defterport\infra\backups" "E:\defterport-backups" /MIR
+#   robocopy "\\wsl$\Ubuntu\home\agentport\agentport\infra\backups" "E:\agentport-backups" /MIR
 ```
 
 Verify the off-box copy includes the `.sha256` files (used to detect corruption).
@@ -288,7 +288,7 @@ verifies the extensions, without touching the live database:
 
 ```bash
 set -a; . ./.env.prod; set +a
-export COMPOSE_PROJECT_NAME=defterport-prod
+export COMPOSE_PROJECT_NAME=agentport-prod
 COMPOSE_FILE=docker-compose.prod.yml infra/scripts/postgres-restore-smoke.sh
 # expect: "Postgres restore smoke passed for <file>"
 ```
@@ -305,18 +305,18 @@ fallen between the two backup points (re-upload, or use the reingest endpoint).
 
 Caddy terminates TLS and forwards plain HTTP to `web` on the internal network.
 
-- **LAN box (default):** `DEFTERPORT_SITE_ADDRESS=https://localhost`. Caddy uses
+- **LAN box (default):** `AGENTPORT_SITE_ADDRESS=https://localhost`. Caddy uses
   its **internal CA** and serves a self-signed certificate (`tls internal` in
   `infra/Caddyfile`). Browsers warn once. To remove the warning, install Caddy's
   root CA on client machines — export it from the container:
   ```bash
   docker compose -f docker-compose.prod.yml --env-file .env.prod \
-    cp caddy:/data/caddy/pki/authorities/local/root.crt ./defterport-root.crt
+    cp caddy:/data/caddy/pki/authorities/local/root.crt ./agentport-root.crt
   ```
-  then import `defterport-root.crt` into the OS/browser trust store on each client.
+  then import `agentport-root.crt` into the OS/browser trust store on each client.
 
-- **Real certificate (public FQDN):** set `DEFTERPORT_SITE_ADDRESS` to your domain
-  (e.g. `https://defterport.example.com`), ensure it resolves to the box and ports
+- **Real certificate (public FQDN):** set `AGENTPORT_SITE_ADDRESS` to your domain
+  (e.g. `https://agentport.example.com`), ensure it resolves to the box and ports
   80/443 are reachable, and **delete the `tls internal` line** in `infra/Caddyfile`.
   Caddy will obtain and renew a Let's Encrypt certificate automatically.
 

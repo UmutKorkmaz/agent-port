@@ -1,23 +1,23 @@
 {
-  "environment": "defterport-local",
-  "description": "DefterPort firm install graph. Mirrors examples/phase0/bootstrap.local.json plus the Platform API Phase 0 create contracts. Consumed by scripts/defterport-bootstrap.sh.",
+  "environment": "agentport-local",
+  "description": "AgentPort firm install graph. Mirrors examples/phase0/bootstrap.local.json plus the Platform API Phase 0 create contracts. Consumed by scripts/agentport-bootstrap.sh.",
   "workspace": {
-    "name": "DefterPort",
-    "slug": "defterport",
+    "name": "AgentPort",
+    "slug": "agentport",
     "kind": "firm-install",
     "metadata": {
-      "product": "defterport",
+      "product": "agentport",
       "tenant": "single",
       "kvkk": "on-prem"
     }
   },
   "project": {
-    "name": "DefterPort Document QA",
-    "slug": "defterport-qa"
+    "name": "AgentPort Document QA",
+    "slug": "agentport-qa"
   },
   "modelRoute": {
-    "name": "DefterPort Ollama Route",
-    "slug": "defterport-ollama",
+    "name": "AgentPort Ollama Route",
+    "slug": "agentport-ollama",
     "providerName": "ollama",
     "modelName": "gemma4:e4b",
     "routeType": "chat",
@@ -26,33 +26,33 @@
     "isEnabled": true
   },
   "agentDefinition": {
-    "name": "DefterPort Mevzuat Asistanı",
-    "slug": "defterport-mevzuat",
+    "name": "AgentPort Mevzuat Asistanı",
+    "slug": "agentport-mevzuat",
     "status": "active",
     "instructions": "Türk vergi mevzuatı ve mükellef belgeleri üzerinde alıntılı yanıt veren asistansın. Yalnızca yüklenen belgelerdeki bilgilere dayan; yeterli bilgi yoksa 'Yüklenen belgelerde bu soruyu yanıtlamak için yeterli bilgi bulamadım.' yanıtını ver. Her yanıtta kaynak alıntılarını belirt."
   },
   "datasets": [
     {
-      "name": "DefterPort Tax Law Pack",
-      "slug": "defterport-tax-law",
+      "name": "AgentPort Tax Law Pack",
+      "slug": "agentport-tax-law",
       "kind": "documents",
       "role": "tax-law-seed",
       "sourceDir": "seed-docs",
       "metadata": {
-        "product": "defterport",
+        "product": "agentport",
         "corpus": "tax-law",
         "seedPack": true,
         "language": "tr"
       }
     },
     {
-      "name": "DefterPort Client Folder",
-      "slug": "defterport-client-folder",
+      "name": "AgentPort Client Folder",
+      "slug": "agentport-client-folder",
       "kind": "documents",
       "role": "client-folder",
       "sourceDir": "client-folder-sample",
       "metadata": {
-        "product": "defterport",
+        "product": "agentport",
         "corpus": "client-folder",
         "tenantScoped": true,
         "language": "tr"
@@ -61,26 +61,26 @@
   ],
   "apiKeys": [
     {
-      "name": "defterport-chat",
+      "name": "agentport-chat",
       "scopes": ["runs:write"],
       "metadata": {
-        "product": "defterport",
+        "product": "agentport",
         "purpose": "chat"
       }
     },
     {
-      "name": "defterport-ingest",
+      "name": "agentport-ingest",
       "scopes": ["datasets:write"],
       "metadata": {
-        "product": "defterport",
+        "product": "agentport",
         "purpose": "ingest"
       }
     },
     {
-      "name": "defterport-trace-read",
+      "name": "agentport-trace-read",
       "scopes": ["trace:read"],
       "metadata": {
-        "product": "defterport",
+        "product": "agentport",
         "purpose": "trace:read"
       }
     }
