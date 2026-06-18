@@ -79,7 +79,9 @@ app.MapPhase12Api();
 app.MapPhase2Api();
 
 // Integration tests manage migrations explicitly (drop + migrate once per container).
+// Only honoured in Development to prevent a misconfigured prod from skipping migrations.
 var skipStartupMigration =
+    app.Environment.IsDevelopment() &&
     string.Equals(
         app.Configuration["AGENTPORT_SKIP_STARTUP_MIGRATION"],
         "true",
