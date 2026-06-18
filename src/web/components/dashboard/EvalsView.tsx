@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { SectionHeader } from "./shared";
 import { useDashboard } from "./dashboard-context";
 
 export function EvalsView() {
@@ -11,20 +12,25 @@ export function EvalsView() {
   return (
     <div className="section-grid">
       <section className="section-card">
-        <h2>{t("evalRunsTitle")}</h2>
-        <button
-          className="control-button"
-          type="button"
-          disabled={busy === "refresh-evals"}
-          onClick={async () => {
-            setBusy("refresh-evals");
-            const context = await ensureBootstrap();
-            await refreshEvalRuns(context.workspaceId);
-            setBusy(null);
-          }}
-        >
-          {t("refresh")}
-        </button>
+        <SectionHeader
+          title={t("evalRunsTitle")}
+          subtitle={t("evalRunsCopy")}
+          actions={
+            <button
+              className="control-button secondary"
+              type="button"
+              disabled={busy === "refresh-evals"}
+              onClick={async () => {
+                setBusy("refresh-evals");
+                const context = await ensureBootstrap();
+                await refreshEvalRuns(context.workspaceId);
+                setBusy(null);
+              }}
+            >
+              {t("refresh")}
+            </button>
+          }
+        />
         <ul>
           {evalRuns.length === 0 ? <li>{t("noEvalRuns")}</li> : null}
           {evalRuns.map((er) => (
@@ -35,8 +41,7 @@ export function EvalsView() {
         </ul>
       </section>
       <aside className="section-card">
-        <h2>{t("evalGatesTitle")}</h2>
-        <p className="asset-detail">{t("evalGatesCopy")}</p>
+        <SectionHeader title={t("evalGatesTitle")} subtitle={t("evalGatesCopy")} />
         <ul>
           <li>{t("gateExactMatch")}</li>
           <li>{t("gateCitation")}</li>

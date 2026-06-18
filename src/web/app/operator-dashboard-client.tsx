@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionDetail, SectionSlug } from "./operator-data";
+import "@/components/dashboard/dashboard.css";
 import { DashboardProvider, useDashboard } from "@/components/dashboard/dashboard-context";
 import { BuilderView } from "@/components/dashboard/BuilderView";
 import { DatasetsView } from "@/components/dashboard/DatasetsView";

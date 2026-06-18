@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { ControlStatusCard, RouteSelector, RouteStatusSummary } from "./shared";
+import { ControlStatusCard, RouteSelector, RouteStatusSummary, SectionHeader } from "./shared";
 import { clampNumber, formatCost, formatRouteLabel, formatScore } from "./helpers";
 import { useDashboard } from "./dashboard-context";
 
@@ -141,7 +141,7 @@ export function PlaygroundView() {
         ) : null}
       </section>
       <aside className="section-card">
-        <h2>{t("routeStatusTitle")}</h2>
+        <SectionHeader title={t("routeStatusTitle")} subtitle={t("routeStatusCopy")} />
         <RouteStatusSummary
           route={selectedModelRoute}
           providerName={selectedRouteProviderName}
@@ -150,12 +150,7 @@ export function PlaygroundView() {
         />
       </aside>
       <aside className="section-card">
-        <div className="panel-header compact">
-          <div>
-            <h2>{t("citationsTitle")}</h2>
-            <p className="panel-copy">{t("citationsCopy")}</p>
-          </div>
-        </div>
+        <SectionHeader title={t("citationsTitle")} subtitle={t("citationsCopy")} />
         <div className="chunk-list">
           {(chatResult?.citations ?? []).map((citation, index) => (
             <article className="asset-card" key={`${citation.citation_id ?? citation.citationId}-${index}`}>
@@ -189,7 +184,7 @@ export function PlaygroundView() {
         </div>
       </aside>
       <aside className="section-card">
-        <h2>{t("tracePreviewTitle")}</h2>
+        <SectionHeader title={t("tracePreviewTitle")} subtitle={t("tracePreviewCopy")} />
         <ControlStatusCard status={traceStatus} />
         {selectedTrace ? (
           <dl className="detail-list">

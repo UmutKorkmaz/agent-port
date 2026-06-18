@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { RouteSelector, RouteStatusSummary } from "./shared";
+import { RouteSelector, RouteStatusSummary, SectionHeader } from "./shared";
 import { formatRouteLabel } from "./helpers";
 import { useDashboard } from "./dashboard-context";
 
@@ -48,7 +48,7 @@ export function BuilderView() {
         </ul>
       </section>
       <aside className="section-card">
-        <h2>{t("routeStatusTitle")}</h2>
+        <SectionHeader title={t("routeStatusTitle")} subtitle={t("routeStatusCopy")} />
         <RouteStatusSummary
           route={selectedModelRoute}
           providerName={selectedRouteProviderName}

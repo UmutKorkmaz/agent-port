@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import type { Citation, RetrievedChunk } from "@/lib/types";
-import { ControlStatusCard } from "./shared";
+import { ControlStatusCard, EmptyStateBrand } from "./shared";
 import { formatCost, formatDate, parseJsonArray } from "./helpers";
 import { useDashboard } from "./dashboard-context";
 
@@ -47,10 +48,16 @@ export function TracesView() {
         </div>
         <div className="trace-list">
           {runs.length === 0 ? (
-            <article className="asset-card empty-inline">
-              <p className="asset-label">{t("noRunsTitle")}</p>
-              <p className="asset-detail">{t("noRunsCopy")}</p>
-            </article>
+            <EmptyStateBrand
+              title={t("noRunsTitle")}
+              copy={t("noRunsCopy")}
+              watermarkLabel={t("noRunsWatermark")}
+              action={
+                <Link className="control-button" href="/playground">
+                  {t("noRunsAction")}
+                </Link>
+              }
+            />
           ) : null}
           {runs.map((run) => {
             const citations = parseJsonArray<Citation>(run.citationsJson);
@@ -62,7 +69,7 @@ export function TracesView() {
                   <span className="status-pill ready">{run.fallbackMode}</span>
                 </div>
                 <p className="asset-detail">{run.answer.slice(0, 220)}</p>
-                <div className="meta-row">
+                <div className="meta-row font-mono">
                   <span>{t("ms", { ms: run.latencyMs })}</span>
                   <span>{formatCost(run.estimatedCost)}</span>
                   <span>{t("citationsCount", { count: citations.length })}</span>
@@ -97,15 +104,15 @@ export function TracesView() {
             <dl className="detail-list">
               <div>
                 <dt>{t("traceId")}</dt>
-                <dd>{selectedTrace.id}</dd>
+                <dd className="font-mono">{selectedTrace.id}</dd>
               </div>
               <div>
                 <dt>{t("correlation")}</dt>
-                <dd>{selectedTrace.correlationId ?? tCommon("none")}</dd>
+                <dd className="font-mono">{selectedTrace.correlationId ?? tCommon("none")}</dd>
               </div>
               <div>
                 <dt>{t("modelRoute")}</dt>
-                <dd>{selectedTrace.modelRouteId ?? tCommon("none")}</dd>
+                <dd className="font-mono">{selectedTrace.modelRouteId ?? tCommon("none")}</dd>
               </div>
               <div>
                 <dt>{t("tokens")}</dt>

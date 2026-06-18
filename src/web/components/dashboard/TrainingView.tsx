@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { SectionHeader } from "./shared";
 import { useDashboard } from "./dashboard-context";
 
 export function TrainingView() {
@@ -25,7 +26,7 @@ export function TrainingView() {
   return (
     <div className="section-grid">
       <section className="section-card">
-        <h2>{t("trainingJobsTitle")}</h2>
+        <SectionHeader title={t("trainingJobsTitle")} subtitle={t("trainingJobsCopy")} />
         <form
           className="control-form stacked"
           onSubmit={async (event) => {
@@ -95,20 +96,25 @@ export function TrainingView() {
         </div>
       </section>
       <aside className="section-card">
-        <h2>{t("modelVersionsTitle")}</h2>
-        <button
-          className="control-button"
-          type="button"
-          disabled={busy === "refresh-models"}
-          onClick={async () => {
-            setBusy("refresh-models");
-            const context = await ensureBootstrap();
-            await refreshModelVersions(context.workspaceId);
-            setBusy(null);
-          }}
-        >
-          {t("refresh")}
-        </button>
+        <SectionHeader
+          title={t("modelVersionsTitle")}
+          subtitle={t("modelVersionsCopy")}
+          actions={
+            <button
+              className="control-button secondary"
+              type="button"
+              disabled={busy === "refresh-models"}
+              onClick={async () => {
+                setBusy("refresh-models");
+                const context = await ensureBootstrap();
+                await refreshModelVersions(context.workspaceId);
+                setBusy(null);
+              }}
+            >
+              {t("refresh")}
+            </button>
+          }
+        />
         <ul>
           {modelVersions.length === 0 ? <li>{t("noModelVersions")}</li> : null}
           {modelVersions.map((mv) => (

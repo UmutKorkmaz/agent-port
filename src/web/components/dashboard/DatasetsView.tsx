@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
 
-import { ControlStatusCard } from "./shared";
+import { ControlStatusCard, EmptyStateBrand } from "./shared";
 import { formatDate, getDocumentChunks, getDocumentId, getDocumentName } from "./helpers";
 import { useDashboard } from "./dashboard-context";
 
@@ -23,6 +24,8 @@ export function DatasetsView() {
     reingestDocument,
     deleteDocument,
   } = useDashboard();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="section-grid">
@@ -49,6 +52,7 @@ export function DatasetsView() {
         </div>
         <form className="control-form" onSubmit={uploadDocument}>
           <input
+            ref={fileInputRef}
             className="file-input"
             type="file"
             accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
@@ -61,10 +65,21 @@ export function DatasetsView() {
         <ControlStatusCard status={documentStatus} />
         <div className="document-list">
           {documentRows.length === 0 ? (
-            <article className="asset-card empty-inline">
-              <p className="asset-label">{t("noDocumentsTitle")}</p>
-              <p className="asset-detail">{t("noDocumentsCopy")}</p>
-            </article>
+            <EmptyStateBrand
+              title={t("noDocumentsTitle")}
+              copy={t("noDocumentsCopy")}
+              watermarkLabel={t("noDocumentsWatermark")}
+              action={
+                <button
+                  className="control-button"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={busy === "upload"}
+                >
+                  {t("noDocumentsAction")}
+                </button>
+              }
+            />
           ) : null}
           {documentRows.map((document) => {
             const documentId = getDocumentId(document);
@@ -76,7 +91,7 @@ export function DatasetsView() {
                     {document.status ?? document.source ?? t("document")}
                   </span>
                 </div>
-                <p className="asset-detail">{t("chunksAndId", { chunks: getDocumentChunks(document), id: documentId })}</p>
+                <p className="asset-detail font-mono">{t("chunksAndId", { chunks: getDocumentChunks(document), id: documentId })}</p>
                 <p className="asset-detail">{t("updated", { date: formatDate(document.updatedAt ?? document.createdAt) })}</p>
                 <div className="button-row compact">
                   <button
@@ -111,7 +126,7 @@ export function DatasetsView() {
                 <span className="status-pill ready">{dataset.kind}</span>
               </div>
               <p className="asset-detail">{t("datasetSummary", { documents: dataset.documentCount, chunks: dataset.chunkCount })}</p>
-              <p className="asset-detail">{dataset.id}</p>
+              <p className="asset-detail font-mono">{dataset.id}</p>
             </article>
           ))}
         </div>

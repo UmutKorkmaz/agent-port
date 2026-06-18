@@ -1,10 +1,39 @@
 "use client";
 
+import type { ReactNode } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import type { SectionDetail } from "../../app/operator-data";
 import type { ControlStatus, LocalModelStatus, ModelRoute, ServiceState } from "@/lib/types";
 import { formatRouteLabel, getRouteProviderName, summarizeLocalModelStatus } from "./helpers";
+
+export function SectionHeader({
+  title,
+  subtitle,
+  actions,
+  status,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  status?: ReactNode;
+}) {
+  return (
+    <div className="section-header">
+      <div>
+        <h2>{title}</h2>
+        {subtitle ? <p className="panel-copy">{subtitle}</p> : null}
+      </div>
+      {(actions || status) && (
+        <div className="section-header-actions">
+          {status}
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ControlStatusCard({ status }: { status: ControlStatus }) {
   return (
@@ -99,11 +128,11 @@ export function RouteStatusSummary({
         </div>
         <div>
           <dt>{t("route")}</dt>
-          <dd>{route?.name ?? t("noRouteSelected")}</dd>
+          <dd className="font-mono">{route?.name ?? t("noRouteSelected")}</dd>
         </div>
         <div>
           <dt>{t("model")}</dt>
-          <dd>{route?.modelName ?? localModelStatus?.modelName ?? localModelStatus?.model ?? tCommon("notLoaded")}</dd>
+          <dd className="font-mono">{route?.modelName ?? localModelStatus?.modelName ?? localModelStatus?.model ?? tCommon("notLoaded")}</dd>
         </div>
         <div>
           <dt>{t("localHealth")}</dt>
@@ -123,7 +152,7 @@ export function SectionView({ section }: { section: SectionDetail }) {
   return (
     <div className="section-grid">
       <section className="section-card">
-        <h2>{t("operatorSurface")}</h2>
+        <SectionHeader title={t("operatorSurface")} subtitle={t("operatorSurfaceCopy")} />
         <ul>
           {primaryItems.map((item) => (
             <li key={item}>{item}</li>
@@ -138,7 +167,7 @@ export function SectionView({ section }: { section: SectionDetail }) {
       </aside>
 
       <section className="section-card">
-        <h2>{t("integrationQueue")}</h2>
+        <SectionHeader title={t("integrationQueue")} subtitle={t("integrationQueueCopy")} />
         <ul>
           {secondaryItems.map((item) => (
             <li key={item}>{item}</li>
@@ -147,7 +176,7 @@ export function SectionView({ section }: { section: SectionDetail }) {
       </section>
 
       <section className="section-card">
-        <h2>{t("serviceLinks")}</h2>
+        <SectionHeader title={t("serviceLinks")} subtitle={t("serviceLinksCopy")} />
         <ul>
           <li>
             <a href="/api/platform/status">{t("platformApiStatus")}</a>
@@ -158,5 +187,53 @@ export function SectionView({ section }: { section: SectionDetail }) {
         </ul>
       </section>
     </div>
+  );
+}
+
+/*
+ * Branded empty state — a quiet AgentPort logo watermark anchors the surface
+ * while a single primary action moves the operator forward. The watermark is
+ * decorative (alt="") and theme-swapped by .brand-watermark-mark in brand.css.
+ * Reused by DatasetsView (no documents) and TracesView (no runs) so the empty
+ * voice is consistent and intentional rather than a generic flat placeholder.
+ */
+export function EmptyStateBrand({
+  title,
+  copy,
+  watermarkLabel,
+  action,
+  className,
+}: {
+  title: string;
+  copy: string;
+  watermarkLabel: string;
+  action?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <article className={`asset-card empty-inline brand-watermark${className ? ` ${className}` : ""}`} aria-label={title}>
+      <Image
+        src="/agentport-logo.png"
+        alt=""
+        width={56}
+        height={56}
+        aria-hidden="true"
+        className="brand-watermark-mark brand-watermark-mark-light"
+      />
+      <Image
+        src="/agentport-logo-dark.png"
+        alt=""
+        width={56}
+        height={56}
+        aria-hidden="true"
+        className="brand-watermark-mark brand-watermark-mark-dark"
+      />
+      <div className="brand-watermark-body">
+        <span className="asset-label brand-watermark-kicker">{watermarkLabel}</span>
+        <p className="empty-title">{title}</p>
+        <p className="empty-copy">{copy}</p>
+        {action ? <div className="brand-watermark-action">{action}</div> : null}
+      </div>
+    </article>
   );
 }

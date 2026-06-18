@@ -1,7 +1,12 @@
 {
   "nav": {
+    "brandName": "AgentPort",
     "brandMeta": "Faz 1.2 operatör konsolu",
     "ariaLabel": "Operatör gezinmesi",
+    "toggleLabel": "Gezinmeyi aç/kapat",
+    "toggleOpen": "Gezinme menüsünü aç",
+    "toggleClose": "Gezinme menüsünü kapat",
+    "drawerLabel": "Operatör gezinme çekmecesi",
     "overview": "Genel Bakış",
     "stack-chooser": "Yığın Seçici",
     "builder": "Oluşturucu",
@@ -36,6 +41,13 @@
     "en": "İngilizce",
     "tr": "Türkçe"
   },
+  "theme": {
+    "label": "Tema",
+    "light": "Açık",
+    "dark": "Koyu",
+    "switchToLight": "Açık temaya geç",
+    "switchToDark": "Koyu temaya geç"
+  },
   "shell": {
     "workspaceStatus": "Çalışma alanı durumu",
     "environment": "Ortam",
@@ -46,8 +58,11 @@
   },
   "sectionView": {
     "operatorSurface": "Operatör yüzeyi",
+    "operatorSurfaceCopy": "Operatör konsolunun bu bölümü için sunulan birincil kontroller.",
     "integrationQueue": "Entegrasyon kuyruğu",
+    "integrationQueueCopy": "Platform API'sinin bu bölümü canlı verilere bağlamak için hâlâ ihtiyaç duyduğu sözleşmeler.",
     "serviceLinks": "Servis bağlantıları",
+    "serviceLinksCopy": "Arka plandaki servisler için doğrudan sağlık uç noktaları.",
     "platformApiStatus": "Platform API durumu",
     "aiServiceHealth": "Yapay zeka servisi sağlığı",
     "currentState": "{title} mevcut durumu"
@@ -96,6 +111,8 @@
     "uploadDocument": "Belge yükle",
     "noDocumentsTitle": "Belge yüklenmedi",
     "noDocumentsCopy": "Bir belge yükleyin veya bir arka uç belge listesi uç noktası eklendikten sonra yenileyin.",
+    "noDocumentsAction": "Belge yükle",
+    "noDocumentsWatermark": "AgentPort bilgi tabanı",
     "document": "belge",
     "chunksAndId": "{chunks} parça - {id}",
     "updated": "Güncellendi {date}",
@@ -137,6 +154,7 @@
     "loadTrace": "İzi yükle",
     "notCaptured": "yakalanmadı",
     "routeStatusTitle": "Rota durumu",
+    "routeStatusCopy": "Seçili rota için sağlayıcı, rota, model ve yerel sağlık durumu.",
     "citationsTitle": "Kaynaklar ve parçalar",
     "citationsCopy": "İstemci tarafı eşikleme, neyin yanıtlanabilir kanıt sayılacağını kontrol eder.",
     "citationFallback": "kaynak",
@@ -144,6 +162,7 @@
     "noChunksTitle": "Eşiğin üzerinde parça yok",
     "noChunksCopy": "Daha fazla kanıt incelemek için puan eşiğini düşürün veya İlk K değerini artırın.",
     "tracePreviewTitle": "İz önizlemesi",
+    "tracePreviewCopy": "En son izlenebilir çalıştırmadan jeton kullanımı ve maliyet.",
     "trace2": "İz",
     "tokens": "Jetonlar",
     "tokensSummary": "{input} giriş / {output} çıkış",
@@ -155,6 +174,8 @@
     "refresh": "Yenile",
     "noRunsTitle": "Henüz çalıştırma yakalanmadı",
     "noRunsCopy": "İlk izlenebilir çalıştırmayı oluşturmak için deneme alanında bir soru sorun.",
+    "noRunsAction": "Deneme alanını aç",
+    "noRunsWatermark": "AgentPort izleri",
     "ms": "{ms} ms",
     "citationsCount": "{count} kaynak",
     "chunksCount": "{count} parça",
@@ -175,6 +196,7 @@
   },
   "training": {
     "trainingJobsTitle": "Eğitim işleri",
+    "trainingJobsCopy": "Aktif veri kümesine karşı bir sınıflandırma veya regresyon işi sıraya alın ve ölçümlerinin sonuçlanmasını izleyin.",
     "jobNamePrefix": "Sınıflandırıcı {timestamp}",
     "createFailed": "Eğitim işi oluşturulamadı.",
     "targetColumn": "Hedef sütun",
@@ -187,6 +209,7 @@
     "kindAndCost": "Tür: {kind} | Tahmini maliyet: ${cost}",
     "metrics": "Metrikler: {metrics}",
     "modelVersionsTitle": "Model sürümleri",
+    "modelVersionsCopy": "Platformun model kayıt defteri tarafından kaydedilen eğitilmiş yapılar.",
     "refresh": "Yenile",
     "noModelVersions": "Henüz model sürümü yok.",
     "noArtifact": "yapıt yok",
@@ -301,6 +324,7 @@
   },
   "evals": {
     "evalRunsTitle": "Değerlendirme çalıştırmaları",
+    "evalRunsCopy": "Herhangi bir yükseltmeden önce yapılandırılan eşiklere göre puanlanan çalıştırmalar.",
     "refresh": "Yenile",
     "noEvalRuns": "Henüz değerlendirme çalıştırması yok.",
     "passed": "GEÇTİ",
@@ -315,6 +339,7 @@
     "gateSafety": "Güvenlik kontrolleri"
   },
   "wallet": {
+    "chargingCopy": "Faz 1.2 boyunca faturalandırma salt okunurdur; ücretlendirme sözleşmeleri sonraki bir dilimle gelir.",
     "chargingDisabled": "Faz 1.2'de ücretlendirme devre dışıdır.",
     "walletId": "Cüzdan kimliği: {id}",
     "walletIdFallback": "Yerel cüzdan yer tutucusunu oluşturmak için ilk kurulumu çalıştırın.",
@@ -338,6 +363,7 @@
     "retrieval": "Getirme: deterministik yerel hash gömmeleriyle pgvector top-k.",
     "answerMode": "Yanıt modu: etkin olduğunda Ollama, aksi takdirde kaynaklı çıkarımsal yedek.",
     "routeStatusTitle": "Rota durumu",
+    "routeStatusCopy": "Bu yapılandırıcıyı destekleyen sağlayıcı, rota, model ve yerel sağlık durumu.",
     "trainingLabTitle": "Eğitim laboratuvarı mevcut",
     "trainingLabCopy": "Sınıflandırıcılar ve regresörler, Eğitim Laboratuvarında CSV veri kümelerinden eğitilebilir.",
     "trainingActive": "Eğitim etkin"

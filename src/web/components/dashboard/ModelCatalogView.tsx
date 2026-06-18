@@ -322,32 +322,66 @@ function ModelCatalogContent({
           <span className={`status-pill ${catalogStatuses.prices.tone}`}>{catalogStatuses.prices.label}</span>
         </div>
         {prices.length > 0 ? (
-          <div className="table-scroll">
-            <table className="price-table">
-              <thead>
-                <tr>
-                  <th>{t("priceProvider")}</th>
-                  <th>{t("priceModel")}</th>
-                  <th>{t("inputPerMillion")}</th>
-                  <th>{t("outputPerMillion")}</th>
-                  <th>{t("request")}</th>
-                  <th>{t("captured")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prices.map((price, index) => (
-                  <tr key={price.id ?? `${price.providerId}-${price.modelName}-${index}`}>
-                    <td>{price.providerName ?? lookupProviderName(price.providerId, providerNameById)}</td>
-                    <td>{price.modelName ?? tCommon("unknown")}</td>
-                    <td>{formatPriceValue(price.inputTokenPricePerMillion, price.currency)}</td>
-                    <td>{formatPriceValue(price.outputTokenPricePerMillion, price.currency)}</td>
-                    <td>{formatPriceValue(price.requestPrice, price.currency)}</td>
-                    <td>{formatDate(price.capturedAt ?? price.createdAt)}</td>
+          <>
+            {/* Wide screen: horizontally scrollable table inside .price-table-wrap. */}
+            <div className="table-scroll price-table-wrap">
+              <table className="price-table">
+                <thead>
+                  <tr>
+                    <th>{t("priceProvider")}</th>
+                    <th>{t("priceModel")}</th>
+                    <th>{t("inputPerMillion")}</th>
+                    <th>{t("outputPerMillion")}</th>
+                    <th>{t("request")}</th>
+                    <th>{t("captured")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {prices.map((price, index) => (
+                    <tr key={price.id ?? `${price.providerId}-${price.modelName}-${index}`}>
+                      <td>{price.providerName ?? lookupProviderName(price.providerId, providerNameById)}</td>
+                      <td>{price.modelName ?? tCommon("unknown")}</td>
+                      <td>{formatPriceValue(price.inputTokenPricePerMillion, price.currency)}</td>
+                      <td>{formatPriceValue(price.outputTokenPricePerMillion, price.currency)}</td>
+                      <td>{formatPriceValue(price.requestPrice, price.currency)}</td>
+                      <td>{formatDate(price.capturedAt ?? price.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Narrow screen: stacked price cards (hidden at >=768px via CSS). */}
+            <ul className="price-card-list" aria-label={t("pricesTitle")}>
+              {prices.map((price, index) => (
+                <li className="price-card" key={price.id ?? `${price.providerId}-${price.modelName}-${index}-card`}>
+                  <div className="price-card-head">
+                    <div>
+                      <p className="price-card-title">{price.providerName ?? lookupProviderName(price.providerId, providerNameById)}</p>
+                      <p className="price-card-subtitle">{price.modelName ?? tCommon("unknown")}</p>
+                    </div>
+                  </div>
+                  <div className="price-card-grid">
+                    <div className="price-card-cell is-cost">
+                      <span className="price-card-cell-label">{t("inputPerMillion")}</span>
+                      <span className="price-card-cell-value">{formatPriceValue(price.inputTokenPricePerMillion, price.currency)}</span>
+                    </div>
+                    <div className="price-card-cell is-cost">
+                      <span className="price-card-cell-label">{t("outputPerMillion")}</span>
+                      <span className="price-card-cell-value">{formatPriceValue(price.outputTokenPricePerMillion, price.currency)}</span>
+                    </div>
+                    <div className="price-card-cell">
+                      <span className="price-card-cell-label">{t("request")}</span>
+                      <span className="price-card-cell-value">{formatPriceValue(price.requestPrice, price.currency)}</span>
+                    </div>
+                    <div className="price-card-cell">
+                      <span className="price-card-cell-label">{t("captured")}</span>
+                      <span className="price-card-cell-value">{formatDate(price.capturedAt ?? price.createdAt)}</span>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <div className="price-fallback-grid">
             {providerCards.slice(0, 8).map((provider) => (

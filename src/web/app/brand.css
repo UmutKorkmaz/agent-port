@@ -1,0 +1,116 @@
+/* ==========================================================================
+   AgentPort brand + typography wiring (kept out of globals.css by contract)
+
+   next/font exposes the IBM Plex families as CSS variables on <html>:
+     --font-sans  -> IBM Plex Sans  (body / UI)
+     --font-mono  -> IBM Plex Mono  (ids, routes, model names, prices)
+
+   globals.css hardcodes a fallback stack on <body>; the font variable is set
+   on <html> so the .font-sans body class wins on specificity, and .font-mono
+   is a standalone utility for code-like surfaces.
+   ========================================================================== */
+
+html {
+  font-family: var(--font-sans), "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Body re-binds to the Plex Sans variable so the globals.css hardcoded "Inter"
+   is overridden without editing globals.css. */
+body {
+  font-family: var(--font-sans), "Inter", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Code-like surfaces: route ids, trace ids, model names, prices, token counts.
+   Quieter than the body voice — tabular figures, slightly tighter. */
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  letter-spacing: -0.01em;
+}
+
+/* Empty-state brand watermark — a faint, restrained logo glyph that gives the
+   "sovereign infrastructure" surface a quiet anchor without competing with copy.
+   Theme-aware: light logo on dark schemes, dark logo on light schemes. */
+.brand-watermark {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-areas: "watermark";
+  align-content: start;
+  isolation: isolate;
+}
+
+.brand-watermark > * {
+  grid-area: watermark;
+}
+
+.brand-watermark-mark {
+  position: relative;
+  z-index: 0;
+  justify-self: start;
+  align-self: start;
+  width: 56px;
+  height: 56px;
+  opacity: 0.12;
+  filter: grayscale(0.2);
+  pointer-events: none;
+  user-select: none;
+  object-fit: contain;
+}
+
+.brand-watermark-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-2);
+  max-width: 38ch;
+}
+
+/* Kicker: a quiet, mono-set label above the empty-state title that names the
+   surface (e.g. "DefterPort knowledge base"). Reads as a dock placard. */
+.brand-watermark-kicker {
+  color: var(--color-accent-strong);
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.brand-watermark-action {
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+
+/* Theme-aware mark swap (mirrors the nav lockup rule). */
+.brand-watermark-mark-dark {
+  display: none;
+}
+
+[data-theme="dark"] .brand-watermark-mark-light {
+  display: none;
+}
+
+[data-theme="dark"] .brand-watermark-mark-dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand-watermark-mark-light {
+    display: none;
+  }
+
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .brand-watermark-mark-dark {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-watermark-mark {
+    width: 44px;
+    height: 44px;
+  }
+}

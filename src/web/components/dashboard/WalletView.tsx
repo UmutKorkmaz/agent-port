@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { SectionHeader } from "./shared";
 import { useDashboard } from "./dashboard-context";
 
 export function WalletView() {
@@ -12,7 +13,7 @@ export function WalletView() {
   return (
     <div className="section-grid">
       <section className="section-card">
-        <h2>{tSection("title")}</h2>
+        <SectionHeader title={tSection("title")} subtitle={t("chargingCopy")} />
         <ul>
           <li>{t("chargingDisabled")}</li>
           <li>{t("walletId", { id: bootstrap?.walletAccountId ?? t("walletIdFallback") })}</li>

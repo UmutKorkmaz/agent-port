@@ -1,7 +1,12 @@
 {
   "nav": {
+    "brandName": "AgentPort",
     "brandMeta": "Phase 1.2 operator console",
     "ariaLabel": "Operator navigation",
+    "toggleLabel": "Toggle navigation",
+    "toggleOpen": "Open navigation menu",
+    "toggleClose": "Close navigation menu",
+    "drawerLabel": "Operator navigation drawer",
     "overview": "Overview",
     "stack-chooser": "Stack Chooser",
     "builder": "Builder",
@@ -36,6 +41,13 @@
     "en": "English",
     "tr": "Turkish"
   },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
   "shell": {
     "workspaceStatus": "Workspace status",
     "environment": "Environment",
@@ -46,8 +58,11 @@
   },
   "sectionView": {
     "operatorSurface": "Operator surface",
+    "operatorSurfaceCopy": "Primary controls surfaced for this section of the operator console.",
     "integrationQueue": "Integration queue",
+    "integrationQueueCopy": "Contracts the platform API still needs to wire this section to live data.",
     "serviceLinks": "Service links",
+    "serviceLinksCopy": "Direct health endpoints for the backing services.",
     "platformApiStatus": "Platform API status",
     "aiServiceHealth": "AI service health",
     "currentState": "{title} current state"
@@ -96,6 +111,8 @@
     "uploadDocument": "Upload document",
     "noDocumentsTitle": "No documents loaded",
     "noDocumentsCopy": "Upload a document or refresh after a backend document list endpoint is added.",
+    "noDocumentsAction": "Upload a document",
+    "noDocumentsWatermark": "AgentPort knowledge base",
     "document": "document",
     "chunksAndId": "{chunks} chunks - {id}",
     "updated": "Updated {date}",
@@ -137,6 +154,7 @@
     "loadTrace": "Load trace",
     "notCaptured": "not captured",
     "routeStatusTitle": "Route status",
+    "routeStatusCopy": "Provider, route, model, and local health for the currently selected route.",
     "citationsTitle": "Citations and chunks",
     "citationsCopy": "Client-side thresholding controls what counts as answerable evidence.",
     "citationFallback": "citation",
@@ -144,6 +162,7 @@
     "noChunksTitle": "No chunks above threshold",
     "noChunksCopy": "Lower the score threshold or increase Top K to inspect more evidence.",
     "tracePreviewTitle": "Trace preview",
+    "tracePreviewCopy": "Token usage and cost from the most recent traceable run.",
     "trace2": "Trace",
     "tokens": "Tokens",
     "tokensSummary": "{input} in / {output} out",
@@ -155,6 +174,8 @@
     "refresh": "Refresh",
     "noRunsTitle": "No runs captured yet",
     "noRunsCopy": "Ask a question in the playground to create the first traceable run.",
+    "noRunsAction": "Open the playground",
+    "noRunsWatermark": "AgentPort traces",
     "ms": "{ms} ms",
     "citationsCount": "{count} citations",
     "chunksCount": "{count} chunks",
@@ -175,6 +196,7 @@
   },
   "training": {
     "trainingJobsTitle": "Training jobs",
+    "trainingJobsCopy": "Queue a classification or regression job against the active dataset and watch its metrics land.",
     "jobNamePrefix": "Classifier {timestamp}",
     "createFailed": "Failed to create training job.",
     "targetColumn": "Target column",
@@ -187,6 +209,7 @@
     "kindAndCost": "Kind: {kind} | Est. cost: ${cost}",
     "metrics": "Metrics: {metrics}",
     "modelVersionsTitle": "Model versions",
+    "modelVersionsCopy": "Trained artifacts registered by the platform's model registry.",
     "refresh": "Refresh",
     "noModelVersions": "No model versions yet.",
     "noArtifact": "no artifact",
@@ -301,6 +324,7 @@
   },
   "evals": {
     "evalRunsTitle": "Eval runs",
+    "evalRunsCopy": "Scored runs gated against configured thresholds before any promotion.",
     "refresh": "Refresh",
     "noEvalRuns": "No eval runs yet.",
     "passed": "PASSED",
@@ -315,6 +339,7 @@
     "gateSafety": "Safety checks"
   },
   "wallet": {
+    "chargingCopy": "Billing is read-only during Phase 1.2; charging contracts land with a later slice.",
     "chargingDisabled": "Charging is disabled in Phase 1.2.",
     "walletId": "Wallet id: {id}",
     "walletIdFallback": "Run onboarding to create the local wallet placeholder.",
@@ -338,6 +363,7 @@
     "retrieval": "Retrieval: pgvector top-k with deterministic local hash embeddings.",
     "answerMode": "Answer mode: Ollama when enabled, otherwise extractive fallback with citations.",
     "routeStatusTitle": "Route status",
+    "routeStatusCopy": "Provider, route, model, and local health backing this builder configuration.",
     "trainingLabTitle": "Training lab available",
     "trainingLabCopy": "Classifiers and regressors can be trained from CSV datasets in the Training Lab.",
     "trainingActive": "Training active"
